@@ -1,6 +1,9 @@
 #ifndef SW_BLOCK_H
 #ifdef SW_BLOCK_H
 
+#include <vector>
+#include "tx.h"
+
 class Block{
 private:
 	string prevHash;
@@ -14,6 +17,7 @@ public:
 	bool VerifyBlock(vector<Block> blkList);
 	string generateHash();		//miner Node task, may use utility function to calculate Hash
 	void printBlock()			//print the calle block
+	string printTxList();
 };
 #endif
 
