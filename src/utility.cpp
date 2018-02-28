@@ -1,9 +1,8 @@
 #include "utils.h"
 #include<openssl/sha.h>
 #include<unistd.h>
-//using namespace std;
 
-string sha256(string s)
+std::string sha256(std::string s)
 {
     char outputBuffer[65];
     unsigned char hash[SHA256_DIGEST_LENGTH];
@@ -17,7 +16,7 @@ string sha256(string s)
         sprintf(outputBuffer + (i * 2), "%02x", hash[i]);
     }
     outputBuffer[64] = 0;
-    string str(outputBuffer);
+    std::string str(outputBuffer);
     return str;
 }
 

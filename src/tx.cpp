@@ -1,12 +1,13 @@
 #include "tx.h"
 #include <cstring>
 #include<iostream>
+#include<sstream>
 using namespace std;
 
 Tx::Tx(string sender, string receiver,int amount){
 	this->sender = sender;
 	this->receiver = receiver;
-	this->amount = amount;
+	this->data= amount;
 }
 
 string Tx::getSender(){

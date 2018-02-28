@@ -5,7 +5,7 @@
 #define MATCHING_ZEROS 5
 
 //function to calculate Sha256
-string sha256(string s);
+std::string sha256(std::string s);
 
 #endif
 

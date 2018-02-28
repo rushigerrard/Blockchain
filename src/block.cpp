@@ -3,13 +3,15 @@
 #include <vector>
 #include "utils.h"
 #include <sstream>
+using namespace std;
 
 string Block::printTxList(){
-	string ret_str = "";
+	stringstream ss;
 	for(int i=0;i<this->tx_list.size();i++){
-		ret_str += tx_list[i].to_string();
+		ss<< ",";
+		ss << tx_list[i];
 	}
-	return ret_str;
+	return ss.str();
 }
 string Block::generateHash(){
 	int nounce = 0;

@@ -1,9 +1,11 @@
 #ifndef BC_TX_H
 #define BC_TX_H
 #include <ostream>
+using namespace std;
 
 class Tx{
 public:
+	Tx(string sender,string receiver,int data);
 	string getSender();
 	string getReceiver();
 	int getData();
