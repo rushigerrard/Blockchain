@@ -1,6 +1,7 @@
 #include "utils.h"
 #include<openssl/sha.h>
 #include<unistd.h>
+using namespace std;
 
 std::string sha256(std::string s)
 {
