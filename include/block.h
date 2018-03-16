@@ -14,10 +14,10 @@ private:
 
 public:
 	//Function to verify the block with given blockChain
-	bool VerifyBlock(vector<Block> blkList);
+	bool VerifyBlock(Block block);
 	string generateHash();		//miner Node task, may use utility function to calculate Hash
 	void printBlock();	//print the calle block
-	string printTxList();
+	string printTxList();//print the transaction in calle block
 };
 
 
