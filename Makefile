@@ -1,7 +1,7 @@
 CXX=g++
 CFLAGS=-c -Wall -g -std=c++11
 LDFLAGS=-lm
-LIBS += -lcrypto -lssl
+LIBS += -lssl -lcrypto
 HEADER=-I$(PWD)/include -I$(shell pwd)/include -I$(shell pwd)/../include
 
 SOURCES=$(wildcard ./src/*.cpp)
@@ -17,10 +17,10 @@ all: bin
 bin: $(MINER_EXECUTABLE)
 
 $(MINER_EXECUTABLE): $(OBJECTS) 
-	$(CXX) -o $@ $(OBJECTS)
+	$(CXX) -o $@ $(OBJECTS) $(LIBS)
 
 %.o: %.cpp 
-	$(CXX) $(CFLAGS) $(HEADER) $< -o $@
+	$(CXX) $(CFLAGS) $(LIBS) $(HEADER) $< -o $@
 
 clean:
 	-rm $(OBJECTS)

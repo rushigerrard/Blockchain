@@ -3,7 +3,11 @@
 #include <vector>
 #include "utils.h"
 #include <sstream>
+#include<iostream>
 using namespace std;
+
+//To Generate Hash We had used order
+// NewHash = Hash(PrevHash + TxList + Nounce)
 
 string Block::printTxList(){
 	stringstream ss;
@@ -36,4 +40,22 @@ string Block::generateHash(){
 	this->nounce = nounce - 1;		// AS ++ will increase it to one more
 	this->myHash = hash;
     return hash;	
+}
+//print the content of this block
+void Block::printBlock(){
+	cout<< "prevHash:" <<prevHash <<" Nounce for this block:" <<nounce<< " Hash:"<<myHash<<"Print Tx List: "<<printTxList()<<endl;
+}
+
+//Verify the block
+
+bool Block::VerifyBlock(Block block){
+	//from the block content get the tx list and nounce and using that nounce get the Hash
+	//value and check the with stored Hash value if it matches return true otherwise return false
+	stringstream ss;
+	ss<<block.prevHash << block.printTxList() << block.nounce;
+	string hash = sha256(ss.str());
+	if(hash.compare(block.myHash)!=0)
+		return false;
+	return true;
+	
 }
