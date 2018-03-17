@@ -1,10 +1,10 @@
 #ifndef SW_BLOCK_CHAIN_H
-#ifdef SW_BLOCK_CHAIN_H
+#define SW_BLOCK_CHAIN_H
 
 #include<vector>
-#include "Block.h"
+#include "block.h"
 
-class BlockChain{
+class BlockChain :public Block{
 private:
 	vector<Block> blkchain;
 public:
