@@ -10,6 +10,7 @@ using namespace std;
 // NewHash = Hash(PrevHash + TxList + Nounce)
 
 string Block::printTxList(){
+	cout<<"printTxList\n";
 	stringstream ss;
 	for(int i=0;i<this->tx_list.size();i++){
 		ss<< ",";
@@ -58,4 +59,17 @@ bool Block::VerifyBlock(Block block){
 		return false;
 	return true;
 	
+}
+
+//Constructor
+
+Block::Block(){
+	prevHash = "";
+	//vector<Tx> tmp_tx;
+	//tx_list = NULL;
+	generateHash();	
+}
+
+void Block::addTx(Tx t1){
+	tx_list.push_back(t1);
 }

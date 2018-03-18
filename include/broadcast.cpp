@@ -60,9 +60,10 @@ void broadcast_message(std::string &message, std::string &endpoint){
               << "Total number of requests failed   : " << failedRequests.load() << std::endl
               << "Total time of execution           : "
               << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
-    
-	client.shutdown();
+
+    client.shutdown();
 }
+
 void broadcast_list_of_transaction(){
 
         std::string message = "TRANSACTIONS";

@@ -9,6 +9,9 @@ private:
 	vector<Block> blkchain;
 public:
 //Verify BlockChain So Far
+	//Constructor which creates first Block of BlockChain(genessis Block)
+	//First Block won't have any transaction But have some predefined Hash
+	BlockChain();
 	bool verifySoFARBC(vector<Block> bchain);
 	void printBC(vector<Block> bchain);
 };

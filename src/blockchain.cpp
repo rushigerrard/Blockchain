@@ -14,3 +14,9 @@ void BlockChain::printBC(vector<Block> bchain){
 		bchain[i].printBlock();
 	}
 }
+
+//constructor
+BlockChain::BlockChain(){
+	Block blk;	//create default Block
+	blkchain.push_back(blk);
+}

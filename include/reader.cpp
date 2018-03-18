@@ -36,11 +36,3 @@ vector<string> read_file(const char* file_name){
 	
 	return list;
 }
-/*
-int main()
-{
-	read_candidate_list();
-	read_broadcast_list();
-  return 0;
-}
-*/
