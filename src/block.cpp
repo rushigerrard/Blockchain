@@ -10,11 +10,11 @@ using namespace std;
 // NewHash = Hash(PrevHash + TxList + Nounce)
 
 string Block::printTxList(){
-	cout<<"printTxList\n";
+	//cout<<"printTxList has "<<this->tx_list.size()<<"\n";
 	stringstream ss;
 	for(int i=0;i<this->tx_list.size();i++){
-		ss<< ",";
-		ss << tx_list[i];
+		ss << tx_list[i].toString();
+		//cout<<tx_list[i].toString();
 	}
 	return ss.str();
 }
@@ -28,9 +28,10 @@ string Block::generateHash(){
     temp[i]='\0';
     string str(temp);
     string hash;
-    do{
+    string txList_str = printTxList();
+	do{
         stringstream ss;
-        ss << this->prevHash << printTxList() << nounce;
+        ss << this->prevHash << txList_str << nounce;
         //cout<<ss.str()<<endl<<endl;
         //usleep(5000000);
         hash = sha256(ss.str());
@@ -40,7 +41,8 @@ string Block::generateHash(){
     }while(hash.substr(0,MATCHING_ZEROS) != str);
 	this->nounce = nounce - 1;		// AS ++ will increase it to one more
 	this->myHash = hash;
-    return hash;	
+    cout<<"Nounce "<<this->nounce <<" myHash "<<this->myHash<<endl;
+	return hash;	
 }
 //print the content of this block
 void Block::printBlock(){
@@ -62,14 +64,21 @@ bool Block::VerifyBlock(Block block){
 }
 
 //Constructor
-
-Block::Block(){
+//Argument to specify the genesis block
+Block::Block(int i){
 	prevHash = "";
 	//vector<Tx> tmp_tx;
 	//tx_list = NULL;
 	generateHash();	
 }
+//Default Constructor
+Block::Block(){
+	prevHash= "";
+	myHash = "";
+	nounce = 0;
+}
 
 void Block::addTx(Tx t1){
-	tx_list.push_back(t1);
+	this->tx_list.push_back(t1);
+	//cout<<"Tx added, Number of transaction "<<this->tx_list.size()<<"\n";
 }

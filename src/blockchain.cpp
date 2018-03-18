@@ -1,5 +1,8 @@
 #include "blockchain.h"
 #include <vector>
+#include<iostream>
+using namespace std;
+
 
 bool BlockChain::verifySoFARBC(vector<Block> bchain){
 	for(int i=0;i<bchain.size();i++){
@@ -17,6 +20,7 @@ void BlockChain::printBC(vector<Block> bchain){
 
 //constructor
 BlockChain::BlockChain(){
-	Block blk;	//create default Block
+	//cout<<"Abhash: "<<endl;
+	Block blk(10);	//create genesis Block with default values
 	blkchain.push_back(blk);
 }

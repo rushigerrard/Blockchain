@@ -19,6 +19,7 @@ public:
 	void printBlock();	//print the calle block
 	string printTxList();//print the transaction in calle block
 	void addTx(Tx t1);
+	Block(int u);
 	Block();
 	void getPrevHash();			//get prevHash from blockchain
 };

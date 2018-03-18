@@ -24,9 +24,10 @@ ostream& operator<<(ostream &strm,const Tx &tx){
 	return strm << tx.sender << "->" << tx.receiver << "->" << tx.data <<endl;
 }
 
-string Tx::to_string(ostream& strm){
-	ostringstream ss;
-	ss<<strm.rdbuf();
-	return ss.str();
+string Tx::toString(){
+	//ostringstream ss;
+	//ss<<strm.rdbuf();
+	//return ss.str();
+	return (this->sender + "->" + this->receiver +"->" + to_string(this->data) + "\n");
 }
 
