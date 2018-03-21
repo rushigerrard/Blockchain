@@ -18,6 +18,10 @@ void BlockChain::printBC(vector<Block> bchain){
 	}
 }
 
+string BlockChain::lastHash(){
+        int index = blkchain.size()-1;
+        return blkchain[index].getMyHash();
+    }
 //constructor
 BlockChain::BlockChain(){
 	//cout<<"Abhash: "<<endl;

@@ -78,6 +78,18 @@ Block::Block(){
 	nounce = 0;
 }
 
+Block::Block(string hash){
+	this->prevHash = hash;
+	myHash = "";
+	nounce = 0;
+}
+void Block::setPrevHash(string hash){
+	this->prevHash = hash;
+}
+
+string Block::getMyHash(){
+	return this->myHash;
+}
 void Block::addTx(Tx t1){
 	this->tx_list.push_back(t1);
 	//cout<<"Tx added, Number of transaction "<<this->tx_list.size()<<"\n";

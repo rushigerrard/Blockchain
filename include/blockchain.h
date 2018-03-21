@@ -14,6 +14,7 @@ public:
 	BlockChain();
 	bool verifySoFARBC(vector<Block> bchain);
 	void printBC(vector<Block> bchain);
+	string lastHash();
 };
 
 #endif
