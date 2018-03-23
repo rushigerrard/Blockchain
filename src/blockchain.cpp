@@ -22,6 +22,11 @@ string BlockChain::lastHash(){
         int index = blkchain.size()-1;
         return blkchain[index].getMyHash();
     }
+
+int BlockChain::addBlock_Last(Block b){
+	blkchain.push_back(b);
+	return blkchain.size()-1;
+}
 //constructor
 BlockChain::BlockChain(){
 	//cout<<"Abhash: "<<endl;

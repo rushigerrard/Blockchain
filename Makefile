@@ -1,7 +1,7 @@
 CXX=g++
 CFLAGS=-c -Wall -g -std=c++11
 LDFLAGS=-lm
-LIBS += -lssl -lcrypto
+LIBS += -lssl -lcrypto -lboost_system -lboost_serialization
 HEADER=-I$(PWD)/include -I$(shell pwd)/include -I$(shell pwd)/../include
 
 SOURCES=$(wildcard ./src/*.cpp)

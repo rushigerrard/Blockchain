@@ -19,7 +19,7 @@ string Block::printTxList(){
 	return ss.str();
 }
 string Block::generateHash(){
-	int nounce = 0;
+	long nounce = 0;
     char temp[MATCHING_ZEROS + 1];
     int i=0;
     for(i=0;i<MATCHING_ZEROS;i++){

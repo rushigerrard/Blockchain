@@ -7,7 +7,7 @@
 class Block{
 private:
 	string prevHash;
-	int nounce;
+	long nounce;
 	vector<Tx> tx_list;		//transaction which goes for this block
 	string myHash;		//TODO: Need to Check whether this variable is required
 						// This might be usefull while verifying block chain

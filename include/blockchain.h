@@ -15,6 +15,7 @@ public:
 	bool verifySoFARBC(vector<Block> bchain);
 	void printBC(vector<Block> bchain);
 	string lastHash();
+	int addBlock_Last(Block b); // adds block in last of blockchain and return index,if requre
 };
 
 #endif
