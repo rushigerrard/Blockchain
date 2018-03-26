@@ -15,18 +15,42 @@
 #include <arpa/inet.h>
 #include "reader.h"
 #include "writer.h"
+//#include "string_split.h"
 
 using namespace std;
 using namespace Pistache;
 using namespace Pistache::Http;
 
+template<typename Out>
+
+void split(const std::string &s, char delim, Out result) {
+    std::stringstream ss(s);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        *(result++) = item;
+    }
+}
+
+std::vector<std::string> split_it(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    split(s, delim, std::back_inserter(elems));
+    return elems;
+}
 
 string my_ip;
+void parse_shared_broadcast_list(string broadcast_list){
+	cout<<"Parsing shared broadcast list "<<broadcast_list<<endl;	
+	vector<string> updated_broadcast_list = split_it(broadcast_list, '|');
+	updated_broadcast_list.erase(updated_broadcast_list.begin());
+	cout<<"Writing updated entries to broadcast list";
+	write_broadcast_list(updated_broadcast_list);
+}
 
 int arrival_informed(string receiver_ip_address){
 
 	Http::Client client;
 
+	bool success = false;
         auto opts = Http::Client::options()
         .threads(1)
         .maxConnectionsPerHost(8);
@@ -35,33 +59,49 @@ int arrival_informed(string receiver_ip_address){
 
         std::vector<Async::Promise<Http::Response>> responses;
 	cout<<"Connecting to candidate IP : "<<receiver_ip_address<<endl;
-        std::atomic<size_t> completedRequests(0);
-        std::atomic<size_t> failedRequests(0);
+        std::atomic<size_t> completedRequests(2);
+        std::atomic<size_t> failedRequests(2);
         auto start = std::chrono::system_clock::now();
 
         int retry = 1;
         string port_no = "9080";
 
-        for (int i = 0; i < retry; ++i) {
-                string page = receiver_ip_address + ":" + port_no + "/arrival";
-                auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(my_ip).send();
+        string page = "http://" + receiver_ip_address + ":" + port_no + "/arrival";
+        
+	cout<<"Trying the API : "<<page<<endl;
+	for(int i = 0; i < retry; i++){
+	auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(my_ip).send();
         resp.then([&](Http::Response response) {
                 ++completedRequests;
 				
             std::cout << "Response code = " << response.code() << std::endl;
             auto body = response.body();
-            if (!body.empty())
-               std::cout << "Response body = " << body << std::endl;
+            if (!body.empty()){
+               	std::cout << "Response body = " << body << std::endl;
+		string broadcast_list = body + "";
+		parse_shared_broadcast_list(broadcast_list);
+	    }
+		success = true;
+
         }, Async::IgnoreException);
         responses.push_back(std::move(resp));
-    }
-	return 0;
+	}
+	sleep(2);
+	auto sync = Async::whenAll(responses.begin(), responses.end());
+    	Async::Barrier<std::vector<Http::Response>> barrier(sync);
+	client.shutdown();
+	if(success == true)
+		return 0;
+	else
+		return 1;
 }
 void node_arrival_call(vector<string> candidate_ip_list){
 	
 	string candidate_ip = candidate_ip_list.at(rand() % candidate_ip_list.size());
 	
-	while(!arrival_informed(candidate_ip)){
+	while(arrival_informed(candidate_ip)){
+       		cout<<"Trying a different IP"<<endl;
+		sleep(10);		
 		candidate_ip = candidate_ip_list.at(rand() % candidate_ip_list.size());
 
 	}
@@ -154,5 +194,3 @@ Step 4
 WHAT IF ALL CANDIDATE NODES GO DOWN?
 
 */
-
-
