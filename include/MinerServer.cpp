@@ -120,7 +120,7 @@ class MyHandler : public Http::Handler {
                                         string share_broadcast_string = "";
                                         vector<string> broadcast_list = read_broadcast_list();
                                         for(int i = 0; i < broadcast_list.size(); i++){
-                                                share_broadcast_string = share_broadcast_string + broadcast_list.at(i);
+                                                share_broadcast_string = share_broadcast_string + "|" + broadcast_list.at(i);
                                         }
                                         response.send(Http::Code::Ok, share_broadcast_string);
                 }
