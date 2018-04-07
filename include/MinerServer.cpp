@@ -37,7 +37,7 @@ class MyHandler : public Http::Handler {
 
                 if (req.resource() == "/ping") {
             if (req.method() == Http::Method::Get) {
-
+		std::cout<<"Got a ping call"<<endl;
                 using namespace Http;
 
                 auto query = req.query();
@@ -52,12 +52,12 @@ class MyHandler : public Http::Handler {
                         .add(Cookie("lang", "en-US"));
 
                     auto stream = response.stream(Http::Code::Ok);
-                    stream << "PO";
-                    stream << "NG";
+                    stream << "po";
+                    stream << "ng";
                     stream << ends;
                 }
                 else {
-                    response.send(Http::Code::Ok, "PONG");
+                    response.send(Http::Code::Ok, "pong");
                 }
 
             }
