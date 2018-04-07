@@ -76,8 +76,9 @@ int ping_candidate(){
         string page = "http://" + candidate_ip + ":" + port_no + "/ping";
 
         cout<<"Trying the API : "<<page<<endl;
-        for(int i = 0; i < retry; i++){
-        auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(my_ip).send();
+        
+	for(int i = 0; i < retry; i++){
+        	auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(my_ip).send();
         resp.then([&](Http::Response response) {
                 ++completedRequests;
 
@@ -91,10 +92,12 @@ int ping_candidate(){
         }, Async::IgnoreException);
         responses.push_back(std::move(resp));
         }
+	cout<< "Responses size is as follows : "<<responses.size()<<endl;
         sleep(2);
         auto sync = Async::whenAll(responses.begin(), responses.end());
         Async::Barrier<std::vector<Http::Response>> barrier(sync);
-        client.shutdown();
+        
+	client.shutdown();
         if(success == true)
                 return 0;
         else
@@ -103,6 +106,7 @@ int ping_candidate(){
 }
 int arrival_informed(string receiver_ip_address){
 
+  try{
         Http::Client client;
 
         bool success = false;
@@ -149,13 +153,13 @@ int arrival_informed(string receiver_ip_address){
                 return 0;
         else
                 return 1;
+}catch (...) { /* */ cout<<"Exceptions caught"<<endl; }
 }
 
 
 int timer_start(std::function<int(void)> func, unsigned int interval)
 {
 
-try{
 	std::thread([func, interval]() {
 		std::cout<<"Pinging candidate node ever 1000 ms"<<std::endl;
         bool pingFlag = true;
@@ -173,7 +177,6 @@ try{
             std::this_thread::sleep_for(std::chrono::milliseconds(interval));
         }
     }).detach();
-}catch (const std::exception&) { /* */ cout<<"Exceptions caught"<<endl; }
 	std::cout<<"Timer thread detached"<<std::endl;
 	return 0;
 }
