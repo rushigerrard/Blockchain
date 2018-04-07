@@ -24,8 +24,11 @@ using namespace std;
 using namespace Pistache;
 using namespace Pistache::Http;
 
+void stabilization_workflow();
+
 string my_ip;
 string candidate_ip;
+vector<string> candidate_ip_list;
 
 template<typename Out>
 void split(const std::string &s, char delim, Out result) {
@@ -46,7 +49,7 @@ void parse_shared_broadcast_list(string broadcast_list){
         cout<<"Parsing shared broadcast list "<<broadcast_list<<endl;
         vector<string> updated_broadcast_list = split_it(broadcast_list, '|');
         updated_broadcast_list.erase(updated_broadcast_list.begin());
-        cout<<"Writing updated entries to broadcast list";
+        cout<<"Writing updated entries to broadcast list"<<endl;
         write_broadcast_list(updated_broadcast_list);
 }
 
@@ -74,7 +77,7 @@ int ping_candidate(){
 
         cout<<"Trying the API : "<<page<<endl;
         for(int i = 0; i < retry; i++){
-        auto resp = client.get(page).cookie(Http::Cookie("lang", "en-US")).send();
+        auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(my_ip).send();
         resp.then([&](Http::Response response) {
                 ++completedRequests;
 
@@ -151,6 +154,8 @@ int arrival_informed(string receiver_ip_address){
 
 int timer_start(std::function<int(void)> func, unsigned int interval)
 {
+
+try{
 	std::thread([func, interval]() {
 		std::cout<<"Pinging candidate node ever 1000 ms"<<std::endl;
         bool pingFlag = true;
@@ -160,6 +165,7 @@ int timer_start(std::function<int(void)> func, unsigned int interval)
             if(func() == 1){
 		pingFlag = false;
 		std::cout<<"Ping failed"<<std::endl;
+		stabilization_workflow();
 		return 1;
 	    }else{
 		std::cout<<"Ping successfully"<<std::endl;
@@ -167,21 +173,24 @@ int timer_start(std::function<int(void)> func, unsigned int interval)
             std::this_thread::sleep_for(std::chrono::milliseconds(interval));
         }
     }).detach();
+}catch (const std::exception&) { /* */ cout<<"Exceptions caught"<<endl; }
 	std::cout<<"Timer thread detached"<<std::endl;
 	return 0;
 }
+void other_thread(){
+	while(true){
+ 		cout<<"I am the other thread"<<endl;
+		sleep(2);
+	}
+}
 void ping_service(){
 	std::cout<<"Ping server started"<<endl;
-        if( timer_start(ping_candidate, 1000) == 1){
-                std::cout<<"Candidate node has gone down. Contact a new candidate instance"<<std::endl;
-        }else{
-		std::cout<<"Timer thread stopped"<<std::endl;
-	}
-	while(true);
+	timer_start(ping_candidate, 1000);
+	other_thread();
 
 }
 
-void node_arrival_call(vector<string> candidate_ip_list){
+void node_arrival_call(){
 
         candidate_ip = candidate_ip_list.at(rand() % candidate_ip_list.size());
 
@@ -194,23 +203,22 @@ void node_arrival_call(vector<string> candidate_ip_list){
 }
 string get_own_ip(){
         int fd;
-    struct ifreq ifr;
-
-    char iface[] = "eth1";
-
-    fd = socket(AF_INET, SOCK_DGRAM, 0);
-
-    //Type of address to retrieve - IPv4 IP address
-    ifr.ifr_addr.sa_family = AF_INET;
-
-    //Copy the interface name in the ifreq structure
-    strncpy(ifr.ifr_name , iface , IFNAMSIZ-1);
-
-    ioctl(fd, SIOCGIFADDR, &ifr);
-
-    close(fd);
-
-    return inet_ntoa(( (struct sockaddr_in *)&ifr.ifr_addr )->sin_addr);
+	struct ifreq ifr;
+    	char iface[] = "eth1";
+    	fd = socket(AF_INET, SOCK_DGRAM, 0);
+    	//Type of address to retrieve - IPv4 IP address
+    	ifr.ifr_addr.sa_family = AF_INET;
+    	//Copy the interface name in the ifreq structure
+    	strncpy(ifr.ifr_name , iface , IFNAMSIZ-1);
+    	ioctl(fd, SIOCGIFADDR, &ifr);
+    	close(fd);
+    	return inet_ntoa(( (struct sockaddr_in *)&ifr.ifr_addr )->sin_addr);
+}
+void stabilization_workflow(){
+	cout<<"Starting stabilization process..."<<endl;
+	sleep(1);
+	node_arrival_call();
+	ping_service();
 }
 int main(){
         //step 1
@@ -218,7 +226,7 @@ int main(){
         cout<<"My public ip = "<<my_ip<<endl;
 
         //step 2
-        vector<string> candidate_ip_list = read_candidate_list();
+        candidate_ip_list = read_candidate_list();
 
         //step 3
         bool is_candidate_ip = false;
@@ -239,8 +247,9 @@ int main(){
         if(!is_candidate_ip){
                 cout<< "Node is not a candidate node"<<endl;
                 cout<<"Informing the cluster of its arrival"<<endl;
-                node_arrival_call(candidate_ip_list);
-				ping_service();
+                
+		stabilization_workflow();
+		cout<<"Returned after an unsuccessful call"<<endl;
         }
         return 0;
 }
