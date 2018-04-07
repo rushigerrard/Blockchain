@@ -15,14 +15,19 @@
 #include <arpa/inet.h>
 #include "reader.h"
 #include "writer.h"
+#include <chrono>
+#include <thread>
+#include <functional>
 //#include "string_split.h"
 
 using namespace std;
 using namespace Pistache;
 using namespace Pistache::Http;
 
-template<typename Out>
+string my_ip;
+string candidate_ip;
 
+template<typename Out>
 void split(const std::string &s, char delim, Out result) {
     std::stringstream ss(s);
     std::string item;
@@ -37,20 +42,20 @@ std::vector<std::string> split_it(const std::string &s, char delim) {
     return elems;
 }
 
-string my_ip;
 void parse_shared_broadcast_list(string broadcast_list){
-	cout<<"Parsing shared broadcast list "<<broadcast_list<<endl;	
-	vector<string> updated_broadcast_list = split_it(broadcast_list, '|');
-	updated_broadcast_list.erase(updated_broadcast_list.begin());
-	cout<<"Writing updated entries to broadcast list";
-	write_broadcast_list(updated_broadcast_list);
+        cout<<"Parsing shared broadcast list "<<broadcast_list<<endl;
+        vector<string> updated_broadcast_list = split_it(broadcast_list, '|');
+        updated_broadcast_list.erase(updated_broadcast_list.begin());
+        cout<<"Writing updated entries to broadcast list";
+        write_broadcast_list(updated_broadcast_list);
 }
 
-int arrival_informed(string receiver_ip_address){
-
+int ping_candidate(){
+	cout<<"Ping candidate node : "<<candidate_ip<<endl;	
+	
 	Http::Client client;
 
-	bool success = false;
+        bool success = false;
         auto opts = Http::Client::options()
         .threads(1)
         .maxConnectionsPerHost(8);
@@ -58,7 +63,54 @@ int arrival_informed(string receiver_ip_address){
         client.init(opts);
 
         std::vector<Async::Promise<Http::Response>> responses;
-	cout<<"Connecting to candidate IP : "<<receiver_ip_address<<endl;
+        std::atomic<size_t> completedRequests(2);
+        std::atomic<size_t> failedRequests(2);
+        auto start = std::chrono::system_clock::now();
+
+        int retry = 1;
+        string port_no = "9080";
+
+        string page = "http://" + candidate_ip + ":" + port_no + "/ping";
+
+        cout<<"Trying the API : "<<page<<endl;
+        for(int i = 0; i < retry; i++){
+        auto resp = client.get(page).cookie(Http::Cookie("lang", "en-US")).send();
+        resp.then([&](Http::Response response) {
+                ++completedRequests;
+
+            std::cout << "Response code = " << response.code() << std::endl;
+            auto body = response.body();
+            if (!body.empty()){
+                std::cout << "Response body = " << body << std::endl;
+            }
+                success = true;
+
+        }, Async::IgnoreException);
+        responses.push_back(std::move(resp));
+        }
+        sleep(2);
+        auto sync = Async::whenAll(responses.begin(), responses.end());
+        Async::Barrier<std::vector<Http::Response>> barrier(sync);
+        client.shutdown();
+        if(success == true)
+                return 0;
+        else
+                return 1;
+	
+}
+int arrival_informed(string receiver_ip_address){
+
+        Http::Client client;
+
+        bool success = false;
+        auto opts = Http::Client::options()
+        .threads(1)
+        .maxConnectionsPerHost(8);
+
+        client.init(opts);
+
+        std::vector<Async::Promise<Http::Response>> responses;
+        cout<<"Connecting to candidate IP : "<<receiver_ip_address<<endl;
         std::atomic<size_t> completedRequests(2);
         std::atomic<size_t> failedRequests(2);
         auto start = std::chrono::system_clock::now();
@@ -67,49 +119,81 @@ int arrival_informed(string receiver_ip_address){
         string port_no = "9080";
 
         string page = "http://" + receiver_ip_address + ":" + port_no + "/arrival";
-        
-	cout<<"Trying the API : "<<page<<endl;
-	for(int i = 0; i < retry; i++){
-	auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(my_ip).send();
+
+        cout<<"Trying the API : "<<page<<endl;
+        for(int i = 0; i < retry; i++){
+        auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(my_ip).send();
         resp.then([&](Http::Response response) {
                 ++completedRequests;
-				
+
             std::cout << "Response code = " << response.code() << std::endl;
             auto body = response.body();
             if (!body.empty()){
-               	std::cout << "Response body = " << body << std::endl;
-		string broadcast_list = body + "";
-		parse_shared_broadcast_list(broadcast_list);
-	    }
-		success = true;
+                std::cout << "Response body = " << body << std::endl;
+                string broadcast_list = body + "";
+                parse_shared_broadcast_list(broadcast_list);
+            }
+                success = true;
 
         }, Async::IgnoreException);
         responses.push_back(std::move(resp));
-	}
-	sleep(2);
-	auto sync = Async::whenAll(responses.begin(), responses.end());
-    	Async::Barrier<std::vector<Http::Response>> barrier(sync);
-	client.shutdown();
-	if(success == true)
-		return 0;
-	else
-		return 1;
+        }
+        sleep(2);
+        auto sync = Async::whenAll(responses.begin(), responses.end());
+        Async::Barrier<std::vector<Http::Response>> barrier(sync);
+        client.shutdown();
+        if(success == true)
+                return 0;
+        else
+                return 1;
 }
-void node_arrival_call(vector<string> candidate_ip_list){
-	
-	string candidate_ip = candidate_ip_list.at(rand() % candidate_ip_list.size());
-	
-	while(arrival_informed(candidate_ip)){
-       		cout<<"Trying a different IP"<<endl;
-		sleep(10);		
-		candidate_ip = candidate_ip_list.at(rand() % candidate_ip_list.size());
 
+
+int timer_start(std::function<int(void)> func, unsigned int interval)
+{
+	std::thread([func, interval]() {
+		std::cout<<"Pinging candidate node ever 1000 ms"<<std::endl;
+        bool pingFlag = true;
+	while (pingFlag == true)
+	//while(true)
+        {
+            if(func() == 1){
+		pingFlag = false;
+		std::cout<<"Ping failed"<<std::endl;
+		return 1;
+	    }else{
+		std::cout<<"Ping successfully"<<std::endl;
+	   }
+            std::this_thread::sleep_for(std::chrono::milliseconds(interval));
+        }
+    }).detach();
+	std::cout<<"Timer thread detached"<<std::endl;
+	return 0;
+}
+void ping_service(){
+	std::cout<<"Ping server started"<<endl;
+        if( timer_start(ping_candidate, 1000) == 1){
+                std::cout<<"Candidate node has gone down. Contact a new candidate instance"<<std::endl;
+        }else{
+		std::cout<<"Timer thread stopped"<<std::endl;
 	}
-	
-	
+	while(true);
+
+}
+
+void node_arrival_call(vector<string> candidate_ip_list){
+
+        candidate_ip = candidate_ip_list.at(rand() % candidate_ip_list.size());
+
+        while(arrival_informed(candidate_ip)){
+                cout<<"Trying a different node"<<endl;
+                sleep(2);
+                candidate_ip = candidate_ip_list.at(rand() % candidate_ip_list.size());
+
+        }
 }
 string get_own_ip(){
-	int fd;
+        int fd;
     struct ifreq ifr;
 
     char iface[] = "eth1";
@@ -129,37 +213,36 @@ string get_own_ip(){
     return inet_ntoa(( (struct sockaddr_in *)&ifr.ifr_addr )->sin_addr);
 }
 int main(){
-	//step 1
-	my_ip = get_own_ip();
-	cout<<"My public ip = "<<my_ip<<endl;
-	
-	//step 2
-	vector<string> candidate_ip_list = read_candidate_list();
-	
-	//step 3
-	bool is_candidate_ip = false;
-	
-	
-	vector<string>  broadcast_ip_list;
-	
-	for(int i = 0; i < candidate_ip_list.size(); i++){
-		if(my_ip.compare(candidate_ip_list.at(i)) == 0){
-			is_candidate_ip = true;
-		}else{
-			broadcast_ip_list.push_back(candidate_ip_list.at(i));
-		}
-	}
-	
-	write_broadcast_list(broadcast_ip_list);
-	
-	if(!is_candidate_ip){
-		cout<< "Node is not a candidate node"<<endl;
-		cout<<"Informing the cluster of its arrival"<<endl;
-		node_arrival_call(candidate_ip_list);
-	}
+        //step 1
+        my_ip = get_own_ip();
+        cout<<"My public ip = "<<my_ip<<endl;
 
-	return 0;
+        //step 2
+        vector<string> candidate_ip_list = read_candidate_list();
 
+        //step 3
+        bool is_candidate_ip = false;
+
+
+        vector<string>  broadcast_ip_list;
+
+        for(int i = 0; i < candidate_ip_list.size(); i++){
+                if(my_ip.compare(candidate_ip_list.at(i)) == 0){
+                        is_candidate_ip = true;
+                }else{
+                        broadcast_ip_list.push_back(candidate_ip_list.at(i));
+                }
+        }
+
+        write_broadcast_list(broadcast_ip_list);
+
+        if(!is_candidate_ip){
+                cout<< "Node is not a candidate node"<<endl;
+                cout<<"Informing the cluster of its arrival"<<endl;
+                node_arrival_call(candidate_ip_list);
+				ping_service();
+        }
+        return 0;
 }
 
 /*
