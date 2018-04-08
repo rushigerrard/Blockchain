@@ -1,6 +1,6 @@
 git clone https://github.com/oktal/pistache.git
-git submodule update --init
 cd pistache
+git submodule update --init
 mkdir build
 cd build
 sudo apt-get install cmake
