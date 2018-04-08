@@ -14,9 +14,13 @@
 using namespace std;
 using namespace Pistache;
 
-void printUsage(){
-        printf("./MinerServer [port_no] [no_of_threads]\n");
-}
+
+extern int port_no;
+extern int thr;
+extern string my_ip;
+extern string candidate_ip;
+extern vector<string> candidate_ip_list;
+
 struct PrintException {
     void operator()(std::exception_ptr exc) const {
         try {
@@ -36,8 +40,8 @@ class MyHandler : public Http::Handler {
             Http::ResponseWriter response) {
 
                 if (req.resource() == "/ping") {
-            if (req.method() == Http::Method::Get) {
-		std::cout<<"Got a ping call"<<endl;
+            if (req.method() == Http::Method::Post) {
+                std::cout<<"Got a ping call from : "<<req.body()<<endl;
                 using namespace Http;
 
                 auto query = req.query();
@@ -91,7 +95,7 @@ class MyHandler : public Http::Handler {
             }
         }
                 else if (req.resource() == "/arrival"){
-			cout<<"New node arrived"<<endl;
+                        cout<<"New node arrived"<<endl;
                         if(req.method() == Http::Method::Post){
 
                                 using namespace Http;
@@ -141,32 +145,14 @@ class MyHandler : public Http::Handler {
     }
 
 };
-int main(int argc, char *argv[]) {
 
-        //Default port is 9080
-    Port port(9080);
-
-    int thr = hardware_concurrency();
-
-        if(argc >= 4){
-                printUsage();
-                exit (EXIT_FAILURE);
-        }
-        //user can define the port and number of concurrent threads;
-    if (argc >= 2) {
-        port = std::stol(argv[1]);
-
-        if (argc == 3)
-            thr = std::stol(argv[2]);
-    }
-
-    Address addr(Ipv4::any(), port);
+int api_service(){
+	Port port(port_no);
+	Address addr(Ipv4::any(), port);
     static constexpr size_t Workers = 4;
 
-    cout << "Cores = " << hardware_concurrency() << endl;
-    cout << "Using " << thr << " threads" << endl;
 
-        //Here server is a pointer to HTTP::Endpoint addr
+    //Here server is a pointer to HTTP::Endpoint addr
     auto server = std::make_shared<Http::Endpoint>(addr);
 
     auto opts = Http::Endpoint::options()
@@ -178,5 +164,5 @@ int main(int argc, char *argv[]) {
 
     std::cout << "Shutdowning server" << std::endl;
     server->shutdown();
+	
 }
-
