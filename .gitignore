@@ -1,4 +1,5 @@
 resources/broadcast_list
+resoruces/candidate_list
 pistache/
 log4cplus/
 src/*.o*
