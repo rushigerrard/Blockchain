@@ -1,0 +1,29 @@
+Here are the steps which timestamp server does on booting up
+
+Step 1.
+Gets its own public ip
+
+Step 2.
+Based on the public ip and candidate list, identifies if it is a candidate member or not
+
+Step 3.1
+If it is a candidate member, generates a broadcast list based on candidate list (includes all but its own ip)
+
+Step 3.2
+If it isn't a candidate member, it means it is a new node being added to the cluster.
+
+It copies the entire candidate list as broadcast list.
+
+	Step 3.2.2
+	The new node (say nn1) contacts one of the candidate IP addresses (say C_IP1) randomly using  /arrival API. As a response, C_IP1 will share its broadcast list with new node in the response.
+	If the above request fails, nn1 contacts another candidate IP - say C_IPn until the request goes through
+
+	Step 3.2.3
+	C_IP1 updates its broadcast list to include nn1's IP address
+
+	Step 3.2.4
+	All new nodes now can receive broadcast only through the candidate IP address they connected to. Hence, they need to check if the candidate node is up at all times. Through /ping API (runs ones every minute), they will ensure the candidate node is up. If it isn't, they will follow steps 3.2.2 - 3.2.4 all over again.
+
+Step 4
+//TODO
+WHAT IF ALL CANDIDATE NODES GO DOWN? 
