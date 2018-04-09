@@ -1,1 +1,4 @@
-
+resources/broadcast_list
+pistache/
+log4cplus/
+src/*.o*
