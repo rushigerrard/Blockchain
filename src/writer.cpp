@@ -25,13 +25,13 @@ void write_file(string file_name, vector<string> ip_list){
 void write_broadcast_list(vector<string> list){
 
 	cout<<"Write broadcast list"<<endl;
-	return write_file("../resources/broadcast_list", list);
+	return write_file("./resources/broadcast_list", list);
 
 }
 
 void write_candidate_list(vector<string> list){
 	cout<<"Write candidate list"<<endl;
-	return write_file("../resources/candidate_list", list);
+	return write_file("./resources/candidate_list", list);
 }
 
 
