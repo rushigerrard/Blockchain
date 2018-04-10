@@ -1,4 +1,5 @@
 #include "utils.h"
+<<<<<<< HEAD
 #include "tx.h"
 #include "block.h"
 #include "blockchain.h"
@@ -13,6 +14,18 @@
 using namespace std;
 
 std::string sha256(std::string s){
+=======
+#include "logger.h"
+#include<openssl/sha.h>
+#include<unistd.h>
+#include<ctime>
+
+//using namespace std;
+
+Logger *log;
+std::string sha256(std::string s)
+{
+>>>>>>> 38f687d7183d8c0d27f35349f1848a62f1b16b57
     char outputBuffer[65];
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
@@ -27,6 +40,46 @@ std::string sha256(std::string s){
     outputBuffer[64] = 0;
     std::string str(outputBuffer);
     return str;
+}
+template <typename T>
+Logger& operator<<(Logger& h, T const& t)
+{
+   h.out1_ << t;
+   h.out2_ << t;
+   return h;
+}
+
+Logger& operator<<(Logger& h, std::ostream&(*f)(std::ostream&))
+{
+   h.out1_ << f;
+   h.out2_ << f;
+   return h;
+}
+
+unsigned long timer() {
+    struct timespec currentTime;
+    if (clock_gettime(CLOCK_MONOTONIC, &currentTime)) {
+        return 0;
+    }
+    return currentTime.tv_sec*NANOSECONDS_IN_A_SECOND + currentTime.tv_nsec;
+}
+
+void create_logger(std::ostream& out1, std::ostream& out2) {
+    log = new Logger(out1, out2);
+}
+
+void log_info(std::string message) {
+    // std::cout << "[ INFO ] " << message << std::endl;
+    *log << "[ INFO ] " << message << std::endl;
+}
+
+void log_error(std::string message) {
+    *log << "[ ERROR ] " << message << std::endl;
+}
+
+void log_debug(std::string message) {
+    // std::cout << "[ DEBUG ] " << message << std::endl;
+    *log << "[ DEBUG ] " << message << std::endl;
 }
 
 vector<std::string> read_broadcast_list(){
