@@ -3,6 +3,14 @@
 
 #include <vector>
 #include "tx.h"
+#include <ostream>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/base_object.hpp>
 
 class Block{
 private:
@@ -25,6 +33,14 @@ public:
 	void getPrevHash();			//get prevHash from blockchain
 	void setPrevHash(string hash);	//set prevHash from tailNode of BlockChain
 	string getMyHash();
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version){
+		ar & prevHash;
+                ar & nounce;
+                ar & myHash;
+                ar & tx_list;
+        }
+
 };
 
 

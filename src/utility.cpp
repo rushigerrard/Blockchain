@@ -1,31 +1,36 @@
+//filename: utility.cpp
+//project class headers
 #include "utils.h"
-<<<<<<< HEAD
 #include "tx.h"
 #include "block.h"
 #include "blockchain.h"
+#include "logger.h"
+//libraries for hashing
 #include <openssl/sha.h>
 #include <unistd.h>
+//libraries for network communication
+#include <pistache/net.h>
+#include <pistache/http.h>
+#include <pistache/client.h>
+#include "pistache/endpoint.h"
+//libraries for serialization
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/base_object.hpp>
+//other c++ libraries
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include <boost/serialization/vector.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
+#include <string>
+#include <ctime>
+
 using namespace std;
-
-std::string sha256(std::string s){
-=======
-#include "logger.h"
-#include<openssl/sha.h>
-#include<unistd.h>
-#include<ctime>
-
-//using namespace std;
 
 Logger *log;
 std::string sha256(std::string s)
 {
->>>>>>> 38f687d7183d8c0d27f35349f1848a62f1b16b57
     char outputBuffer[65];
     unsigned char hash[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
@@ -41,6 +46,7 @@ std::string sha256(std::string s)
     std::string str(outputBuffer);
     return str;
 }
+
 template <typename T>
 Logger& operator<<(Logger& h, T const& t)
 {
@@ -129,7 +135,6 @@ void write_file(string file_name, vector<string> ip_list){
 
 
 void write_broadcast_list(vector<string> list){
-
         cout<<"Write broadcast list"<<endl;
         return write_file("./resources/broadcast_list", list);
 
@@ -142,17 +147,57 @@ void write_candidate_list(vector<string> list){
 
 
 std::string toString(Tx tx){
-    std::ostringstream oss;
-    boost::text_oarchive:: oa(oss);
-    oss << tx;
-    return ba.str();
+	std::ostringstream oss;
+        boost::archive::text_oarchive oa(oss);
+        oa << tx;
+	return oss.str();
 }
 
-Tx toTx(std::tring s){
-    std::istringstream iss;
-    boost::text_iarchive ia(iss);
-    iss << s;
-    Tx tx;
-    tx << ia;
-    return tx;
+std::string toString(Block b){
+	std::ostringstream oss;
+        boost::archive::text_oarchive oa(oss);
+        oa << b;
+	return oss.str();
+}
+
+std::string toString(BlockChain bc){
+	std::ostringstream oss;
+        boost::archive::text_oarchive oa(oss);
+        oa << bc;
+	return oss.str();
+}
+
+std::string toString(vector<std::string> sv){
+	std::ostringstream oss;
+	boost::archive::text_oarchive oa(oss);
+	oa << sv;
+	return oss.str();
+}
+Tx toTx(std::string s){
+	Tx tx;
+	std::istringstream iss(s);
+	boost::archive::text_iarchive ia(iss);
+	ia >> tx;
+	return tx;
+}
+Block toBlock(std::string s){
+	Block bl;
+	std::istringstream iss(s);
+	boost::archive::text_iarchive ia(iss);
+	ia >> bl;
+	return bl;
+}
+BlockChain toBlockChain(std::string s){
+	BlockChain bc;
+	std::istringstream iss(s);
+	boost::archive::text_iarchive ia(iss);
+	ia >> bc;
+	return bc;
+}
+vector<std::string> toStringVector(std::string s){
+	vector<std::string> sv;
+	std::istringstream iss(s);
+	boost::archive::text_iarchive ia(iss);
+	ia >> sv;
+	return sv;
 }

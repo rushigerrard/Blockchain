@@ -2,29 +2,25 @@
 #ifndef SW_UTILS_H
 #define SW_UTILS_H
 
-#include <tx>
-#include <block>
-#include <blockchain>
+#include "tx.h"
+#include "block.h"
+#include "blockchain.h"
 #include <string>
-<<<<<<< HEAD
 #include <vector>
-
-#define MATCHING_ZEROS 8
-=======
 #include<iostream>
 #include<sstream>
 #include<fstream>
+
+#define MATCHING_ZEROS 8
 
 #define MICROSECONDS_IN_A_SECOND 1000000
 #define NANOSECONDS_IN_A_SECOND 1000000000
 #define MICROSECONDS_IN_A_NANOSECOND 1000
 #define MATCHING_ZEROS 5
->>>>>>> 38f687d7183d8c0d27f35349f1848a62f1b16b57
 
 //function to calculate Sha256
 std::string sha256(std::string s);
 
-<<<<<<< HEAD
 //functions to write into files
 void write_broadcast_list(vector<std::string>);
 void write_candidate_list(vector<std::string>);
@@ -36,12 +32,15 @@ vector<std::string> read_candidate_list();
 vector<std::string> read_file(const char* );
 
 //function to convert objects into string
-std::string toString(Tx);
-//std::string toString(Block);
-//std::string toString(BlockChain):
-//std::string toString(vector<std::string>);
-Tx toTx(std::string s);
-=======
+std::string toString(Tx tx);
+std::string toString(Block bl);
+std::string toString(BlockChain bc);
+std::string toString(vector<std::string> vs);
+
+Tx toTx(std::string);
+Block toBlock(std::string);
+BlockChain toBlockChain(std::string);
+vector<std::string> toStringVector(std::string);
 unsigned long timer();
 
 void create_logger(std::ostream& out1, std::ostream& out2);
@@ -56,6 +55,5 @@ template <typename T> std::string toStr(const T& n) {
     return stm.str();
 }
 
->>>>>>> 38f687d7183d8c0d27f35349f1848a62f1b16b57
 #endif
 
