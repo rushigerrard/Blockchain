@@ -33,6 +33,7 @@ public:
 	void getPrevHash();			//get prevHash from blockchain
 	void setPrevHash(string hash);	//set prevHash from tailNode of BlockChain
 	string getMyHash();
+	vector<Tx> getTxList();
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version){
 		ar & prevHash;

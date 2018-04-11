@@ -11,8 +11,6 @@
 #include<sstream>
 #include<fstream>
 
-#define MATCHING_ZEROS 8
-
 #define MICROSECONDS_IN_A_SECOND 1000000
 #define NANOSECONDS_IN_A_SECOND 1000000000
 #define MICROSECONDS_IN_A_NANOSECOND 1000

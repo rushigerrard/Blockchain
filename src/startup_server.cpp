@@ -13,11 +13,10 @@
 #include <net/if.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include "reader.h"
-#include "writer.h"
 #include <chrono>
 #include <thread>
 #include <functional>
+#include "utils.h"
 //#include "string_split.h"
 
 using namespace std;

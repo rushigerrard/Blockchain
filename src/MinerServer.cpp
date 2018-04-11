@@ -34,8 +34,8 @@ extern string candidate_ip;
 extern vector<string> candidate_ip_list;
 
 //global variables for business logic
-extern BlockChain bc;
-extern vector<Tx> txlist;
+BlockChain bc;
+vector<Tx> txlist;
 
 struct PrintException {
     void operator()(std::exception_ptr exc) const {
@@ -82,11 +82,14 @@ class MyHandler : public Http::Handler {
 					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
 				} else{
 					string t = req.body();
+					auto query = req.query();
 					Tx tx = toTx(t);
 					txlist.push_back(tx);
 					response.send(Http::Code::Ok, "Transaction received", MIME(Text, Plain));
-					//broadcast transaction
-					if(verifyTx(t) {
+					if(query.has("user")) {
+						//broadcast transaction
+					}
+					if(verifyTx(tx)) {
 						//add transaction to block
 					}
 				}
@@ -153,37 +156,37 @@ class MyHandler : public Http::Handler {
             .then([=](ssize_t) { }, PrintException());
     }
 
-};
-
-bool verifyTx(Tx t) {
-	vector<string> inputs = tx.getInputs();
-	int check1 = 0;
-	int check2 = 0;
-	for(int i = 0; i < bc.blkchain.size(); i++) {
-		Block blk = bc.blkchain[i];
-		for(int j = 0; j < blk.tx_list.size(); i++) {
-			vector<string> inputs1 = blk.tx_list[j].getInputs();
-			//check1 = check if the input transactions are present
-			for(int k = 0; k < inputs.size(); k++) {
-				if(!inputs[k].compare(blk.tx_list[j].getId())) {
-					check1++;
-				}
-				//check2 = check if the input transaction is not input of other transactions
-				for(int l = 0; l < inputs1.size(); i++) {
-					if(!inputs[k].compare(inputs1[l])) {
-						check2++;
+	bool verifyTx(Tx tx) {
+		vector<string> inputs = tx.getInputs();
+		int check1 = 0;
+		int check2 = 0;
+		vector<Block> blkchain = bc.getBlockChain();
+		for(int i = 0; i < blkchain.size(); i++) {
+			Block blk = blkchain[i];
+			vector<Tx> tx_list = blk.getTxList();
+			for(int j = 0; j < tx_list.size(); i++) {
+				vector<string> inputs1 = tx_list[j].getInputs();
+				//check1 = check if the input transactions are present
+				for(int k = 0; k < inputs.size(); k++) {
+					if(!inputs[k].compare(tx_list[j].getId())) {
+						check1++;
+					}
+					//check2 = check if the input transaction is not input of other transactions
+					for(int l = 0; l < inputs1.size(); i++) {
+						if(!inputs[k].compare(inputs1[l])) {
+							check2++;
+						}
 					}
 				}
 			}
 		}
+		if(check1 == inputs.size() & check2 == 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
-	if(check1 == inputs.size() & check2 == 0) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
+};
 int api_service(){
 	Port port(port_no);
 	Address addr(Ipv4::any(), port);

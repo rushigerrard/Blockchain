@@ -5,6 +5,8 @@
 #include<sstream>
 using namespace std;
 
+Tx::Tx(){
+}
 Tx::Tx(string sender, string receiver,int amount){
 	const long double sysTime = time(0);
     this->TxId = sender + receiver + to_string(sysTime);

@@ -1,6 +1,7 @@
 #include "blockchain.h"
 #include <vector>
 #include<iostream>
+#include "block.h"
 using namespace std;
 
 
@@ -26,6 +27,10 @@ string BlockChain::lastHash(){
 int BlockChain::addBlock_Last(Block b){
 	blkchain.push_back(b);
 	return blkchain.size()-1;
+}
+
+vector<Block> BlockChain::getBlockChain() {
+	return blkchain;
 }
 //constructor
 BlockChain::BlockChain(){

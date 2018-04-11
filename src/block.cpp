@@ -9,6 +9,9 @@ using namespace std;
 //To Generate Hash We had used order
 // NewHash = Hash(PrevHash + TxList + Nounce)
 
+vector<Tx> Block::getTxList() {
+	return tx_list;
+}
 string Block::printTxList(){
 	//cout<<"printTxList has "<<this->tx_list.size()<<"\n";
 	stringstream ss;

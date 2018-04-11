@@ -9,7 +9,7 @@ OBJECTS=$(SOURCES:.cpp=.o)
 
 MINER_MAIN=./src/main.cpp
 START_MAIN = ./src/startup_server.cpp
-READER_WRITER_FILE= ./src/reader.cpp ./src/writer.cpp ./src/MinerServer.cpp
+READER_WRITER_FILE= ./src/MinerServer.cpp
 
 MINER_EXECUTABLE=./miner
 SERVER_START_EXE=./serverstartup

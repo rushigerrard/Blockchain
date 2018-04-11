@@ -28,7 +28,7 @@
 
 using namespace std;
 
-Logger *log;
+Logger *log1;
 std::string sha256(std::string s)
 {
     char outputBuffer[65];
@@ -71,21 +71,21 @@ unsigned long timer() {
 }
 
 void create_logger(std::ostream& out1, std::ostream& out2) {
-    log = new Logger(out1, out2);
+    log1 = new Logger(out1, out2);
 }
 
 void log_info(std::string message) {
     // std::cout << "[ INFO ] " << message << std::endl;
-    *log << "[ INFO ] " << message << std::endl;
+    *log1 << "[ INFO ] " << message << std::endl;
 }
 
 void log_error(std::string message) {
-    *log << "[ ERROR ] " << message << std::endl;
+    *log1 << "[ ERROR ] " << message << std::endl;
 }
 
 void log_debug(std::string message) {
     // std::cout << "[ DEBUG ] " << message << std::endl;
-    *log << "[ DEBUG ] " << message << std::endl;
+    *log1 << "[ DEBUG ] " << message << std::endl;
 }
 
 vector<std::string> read_broadcast_list(){
