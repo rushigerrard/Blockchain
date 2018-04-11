@@ -84,12 +84,12 @@ class MyHandler : public Http::Handler {
 					string t = req.body();
 					auto query = req.query();
 					Tx tx = toTx(t);
-					txlist.push_back(tx);
 					response.send(Http::Code::Ok, "Transaction received", MIME(Text, Plain));
 					if(query.has("user")) {
 						//broadcast transaction
 					}
 					if(verifyTx(tx)) {
+						txlist.push_back(tx);
 						//add transaction to block
 					}
 				}
@@ -133,11 +133,8 @@ class MyHandler : public Http::Handler {
                                         stream << ends;
                 }
                 else {
-                                        string share_broadcast_string = "";
                                         vector<string> broadcast_list = read_broadcast_list();
-                                        for(int i = 0; i < broadcast_list.size(); i++){
-                                                share_broadcast_string = share_broadcast_string + "|" + broadcast_list.at(i);
-                                        }
+                                        string share_broadcast_string = toString(broadcast_list);
                                         response.send(Http::Code::Ok, share_broadcast_string);
                 }
                         }else{

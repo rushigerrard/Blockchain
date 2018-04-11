@@ -53,7 +53,7 @@ std::vector<std::string> split_it(const std::string &s, char delim) {
 
 void parse_shared_broadcast_list(string broadcast_list){
         cout<<"Parsing shared broadcast list "<<broadcast_list<<endl;
-        vector<string> updated_broadcast_list = split_it(broadcast_list, '|');
+        vector<string> updated_broadcast_list = toStringVector(broadcast_list);
         updated_broadcast_list.erase(updated_broadcast_list.begin());
         cout<<"Writing updated entries to broadcast list"<<endl;
         write_broadcast_list(updated_broadcast_list);
@@ -143,8 +143,7 @@ int arrival_informed(string receiver_ip_address){
             auto body = response.body();
             if (!body.empty()){
                 std::cout << "Response body = " << body << std::endl;
-                string broadcast_list = body + "";
-                parse_shared_broadcast_list(broadcast_list);
+                parse_shared_broadcast_list(body);
             }
                 success = true;
 
