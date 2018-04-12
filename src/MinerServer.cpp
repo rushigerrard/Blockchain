@@ -155,7 +155,7 @@ class MyHandler : public Http::Handler {
 
 	bool verifyTx(Tx tx) {
 		vector<string> inputs = tx.getInputs();
-		int check1 = 0;
+		unsigned int check1 = 0;
 		int check2 = 0;
 		vector<Block> blkchain = bc.getBlockChain();
 		for(unsigned int i = 0; i < blkchain.size(); i++) {
@@ -177,7 +177,7 @@ class MyHandler : public Http::Handler {
 				}
 			}
 		}
-		if(check1 == inputs.size() & check2 == 0) {
+		if((check1 == inputs.size()) & (check2 == 0)) {
 			return true;
 		} else {
 			return false;
@@ -187,7 +187,6 @@ class MyHandler : public Http::Handler {
 int api_service(){
 	Port port(port_no);
 	Address addr(Ipv4::any(), port);
-    static constexpr size_t Workers = 4;
 
 
     //Here server is a pointer to HTTP::Endpoint addr
@@ -202,5 +201,5 @@ int api_service(){
 
     std::cout << "Shutdowning server" << std::endl;
     server->shutdown();
-	
+	return 0;
 }

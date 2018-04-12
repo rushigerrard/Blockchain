@@ -6,7 +6,7 @@ using namespace std;
 
 
 bool BlockChain::verifySoFARBC(vector<Block> bchain){
-	for(int i=0;i<bchain.size();i++){
+	for(unsigned int i=0;i<bchain.size();i++){
 		if(VerifyBlock(bchain[i])==false)
 			return false;
 	}
@@ -14,7 +14,7 @@ bool BlockChain::verifySoFARBC(vector<Block> bchain){
 }
 
 void BlockChain::printBC(vector<Block> bchain){
-	for(int i=0;i<bchain.size();i++){
+	for(unsigned int i=0;i<bchain.size();i++){
 		bchain[i].printBlock();
 	}
 }

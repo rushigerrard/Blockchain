@@ -126,7 +126,7 @@ void write_file(string file_name, vector<string> ip_list){
         ostream os(&fb);
 
 
-        for(int i = 0; i < ip_list.size(); i++){
+        for(unsigned int i = 0; i < ip_list.size(); i++){
                 os << ip_list.at(i)<<endl;
         }
         fb.close();

@@ -15,7 +15,7 @@ vector<Tx> Block::getTxList() {
 string Block::printTxList(){
 	//cout<<"printTxList has "<<this->tx_list.size()<<"\n";
 	stringstream ss;
-	for(int i=0;i<this->tx_list.size();i++){
+	for(unsigned int i=0;i < this->tx_list.size(); i++){
 		ss << tx_list[i].toString();
 		//cout<<tx_list[i].toString();
 	}

@@ -74,7 +74,6 @@ int ping_candidate(){
         std::vector<Async::Promise<Http::Response>> responses;
         std::atomic<size_t> completedRequests(2);
         std::atomic<size_t> failedRequests(2);
-        auto start = std::chrono::system_clock::now();
 
         int retry = 1;
         string port_no = "9080";
@@ -112,7 +111,6 @@ int ping_candidate(){
 }
 int arrival_informed(string receiver_ip_address){
 
-  try{
         Http::Client client;
 
         bool success = false;
@@ -126,7 +124,6 @@ int arrival_informed(string receiver_ip_address){
         cout<<"Connecting to candidate IP : "<<receiver_ip_address<<endl;
         std::atomic<size_t> completedRequests(2);
         std::atomic<size_t> failedRequests(2);
-        auto start = std::chrono::system_clock::now();
 
         int retry = 1;
         string port_no = "9080";
@@ -158,13 +155,11 @@ int arrival_informed(string receiver_ip_address){
                 return 0;
         else
                 return 1;
-}catch (...) { /* */ cout<<"Exceptions caught"<<endl; }
 }
 
 
 int timer_start(std::function<int(void)> func, unsigned int interval)
 {
-
         std::thread([func, interval]() {
                 std::cout<<"Pinging candidate node ever 1000 ms"<<std::endl;
         bool pingFlag = true;
@@ -181,6 +176,7 @@ int timer_start(std::function<int(void)> func, unsigned int interval)
            }
             std::this_thread::sleep_for(std::chrono::milliseconds(interval));
         }
+	return 0;
     }).detach();
         std::cout<<"Timer thread detached"<<std::endl;
         return 0;
@@ -282,7 +278,7 @@ int main(int argc, char *argv[]){
         bool is_candidate_ip = false;
         vector<string>  broadcast_ip_list;
 
-        for(int i = 0; i < candidate_ip_list.size(); i++){
+        for(unsigned int i = 0; i < candidate_ip_list.size(); i++){
                 if(my_ip.compare(candidate_ip_list.at(i)) == 0){
                         is_candidate_ip = true;
                 }else{
