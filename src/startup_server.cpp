@@ -54,7 +54,7 @@ std::vector<std::string> split_it(const std::string &s, char delim) {
 void parse_shared_broadcast_list(string broadcast_list){
         cout<<"Parsing shared broadcast list "<<broadcast_list<<endl;
         vector<string> updated_broadcast_list = toStringVector(broadcast_list);
-        updated_broadcast_list.erase(updated_broadcast_list.begin());
+	cout<<"size of updated_broadcast_list: "<< updated_broadcast_list.size();
         cout<<"Writing updated entries to broadcast list"<<endl;
         write_broadcast_list(updated_broadcast_list);
 }

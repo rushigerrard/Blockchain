@@ -1,3 +1,4 @@
+//filename: user.cpp
 //libraries for network communication
 #include <pistache/net.h>
 #include <pistache/http.h>
@@ -50,7 +51,7 @@ int main(int argc, char *argv[]) {
 	
 	std::string t = stringGenerator();
 	std::string port_no = "9080";
-	std::string endpoint = "/ptx";
+	std::string endpoint = "/tx";
 	std::string ip_address = argv[1];
 	std::string host_info =  ip_address + ":" + port_no + endpoint;
 	auto resp = client.post(host_info).cookie(Http::Cookie("lang", "en-US")).body(t).send();

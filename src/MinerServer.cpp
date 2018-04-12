@@ -158,18 +158,18 @@ class MyHandler : public Http::Handler {
 		int check1 = 0;
 		int check2 = 0;
 		vector<Block> blkchain = bc.getBlockChain();
-		for(int i = 0; i < blkchain.size(); i++) {
+		for(unsigned int i = 0; i < blkchain.size(); i++) {
 			Block blk = blkchain[i];
 			vector<Tx> tx_list = blk.getTxList();
-			for(int j = 0; j < tx_list.size(); i++) {
+			for(unsigned int j = 0; j < tx_list.size(); i++) {
 				vector<string> inputs1 = tx_list[j].getInputs();
 				//check1 = check if the input transactions are present
-				for(int k = 0; k < inputs.size(); k++) {
+				for(unsigned int k = 0; k < inputs.size(); k++) {
 					if(!inputs[k].compare(tx_list[j].getId())) {
 						check1++;
 					}
 					//check2 = check if the input transaction is not input of other transactions
-					for(int l = 0; l < inputs1.size(); i++) {
+					for(unsigned int l = 0; l < inputs1.size(); i++) {
 						if(!inputs[k].compare(inputs1[l])) {
 							check2++;
 						}
