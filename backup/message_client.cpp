@@ -24,7 +24,7 @@ string increment_message_count(){
 string generate_message_id(){
 	
 		string message_id = my_ip + "_" + increment_message_count();
-		cout<<"Message id : "<<message_id;
+		cout<<"Message id : "<<message_id<<endl;
 		return message_id;
 }
 int main(){

@@ -4,3 +4,4 @@ resources/*
 pistache/
 log4cplus/
 src/*.o*
+backup/*.o*
