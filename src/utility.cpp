@@ -4,6 +4,7 @@
 #include "tx.h"
 #include "block.h"
 #include "blockchain.h"
+#include "message.h"
 #include "logger.h"
 //libraries for hashing
 #include <openssl/sha.h>
@@ -173,6 +174,13 @@ std::string toString(vector<std::string> sv){
 	oa << sv;
 	return oss.str();
 }
+std::string toString(Messge msg){
+	std::ostringstream oss;
+	boost::archive::text_oarchive oa(oss);
+	oa << msg;
+	return oss.str();
+}
+
 Tx toTx(std::string s){
 	Tx tx;
 	std::istringstream iss(s);
@@ -200,4 +208,12 @@ vector<std::string> toStringVector(std::string s){
 	boost::archive::text_iarchive ia(iss);
 	ia >> sv;
 	return sv;
+}
+
+Message toMessage(std::string s){
+	Message msg;
+	std::istringstream iss(s);
+	boost::archive::text_iarchive ia(iss);
+	ia >> msg;
+	return msg;
 }
