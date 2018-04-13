@@ -202,6 +202,7 @@ vector<std::string> toStringVector(std::string s){
 	ia >> sv;
 	return sv;
 }
+
 Message toMessage(std::string s){
 	Message msg;
 	std::istringstream iss(s);
@@ -215,3 +216,4 @@ std::string toString(Message msg){
         oa << msg;
         return oss.str();
 }
+

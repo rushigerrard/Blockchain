@@ -4,6 +4,7 @@
 #include "utils.h"
 #include <sstream>
 #include<iostream>
+#include "message.h"
 using namespace std;
 
 //To Generate Hash We had used order
