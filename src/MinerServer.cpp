@@ -37,6 +37,8 @@ extern vector<string> candidate_ip_list;
 BlockChain bc;
 vector<Tx> txlist;
 
+void message_deserialization(string );
+
 struct PrintException {
     void operator()(std::exception_ptr exc) const {
         try {
@@ -105,53 +107,49 @@ class MyHandler : public Http::Handler {
                     				std::cout << "Sent " << bytes << " bytes" << std::endl;
                 			}, Async::NoExcept);
             			}
+        		}else if(req.resource() == "/broadcast"){
+				if(req.method() == Http::Method::Post){
+					
+				}
+			}else if (req.resource() == "/arrival"){
+                        	cout<<"New node arrived"<<endl;
+                        	if(req.method() == Http::Method::Post){
+                               		using namespace Http;
+
+                			auto query = req.query();
+                			if (query.has("chunked")) {
+                    				std::cout << "Using chunked encoding" << std::endl;
+
+                    				response.headers()
+                        			.add<Header::Server>("pistache/0.1")
+                        			.add<Header::ContentType>(MIME(Text, Plain));
+
+                    				response.cookies()
+                        			.add(Cookie("lang", "en-US"));
+
+			                    	auto stream = response.stream(Http::Code::Ok);
+                                        	stream << ends;
+                			}
+                			else {
+                                        	vector<string> broadcast_list = read_broadcast_list();
+                                        	string share_broadcast_string = toString(broadcast_list);
+                                        	response.send(Http::Code::Ok, share_broadcast_string);
+                			}
+                        	}else{
+                                	response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
+                        	}
+                	}	
+                	else {
+            			response.send(Http::Code::Not_Found);
         		}
-                else if (req.resource() == "/arrival"){
-                        cout<<"New node arrived"<<endl;
-                        if(req.method() == Http::Method::Post){
 
-                                using namespace Http;
+    		}
 
-                auto query = req.query();
-                if (query.has("chunked")) {
-                    std::cout << "Using chunked encoding" << std::endl;
-
-                    response.headers()
-                        .add<Header::Server>("pistache/0.1")
-                        .add<Header::ContentType>(MIME(Text, Plain));
-
-                    response.cookies()
-                        .add(Cookie("lang", "en-US"));
-
-                    auto stream = response.stream(Http::Code::Ok);
-                        /*
-                    vector<string> broadcast_list = read_broadcast_list();
-                                        for(int i = 0; i < broadcast_list.size(); i++){
-                                                stream << broadcast_list.at(i);
-                                        }
-                        */
-                                        stream << ends;
-                }
-                else {
-                                        vector<string> broadcast_list = read_broadcast_list();
-                                        string share_broadcast_string = toString(broadcast_list);
-                                        response.send(Http::Code::Ok, share_broadcast_string);
-                }
-                        }else{
-                                response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
-                        }
-                }
-                else {
-            response.send(Http::Code::Not_Found);
-        }
-
-    }
-
-    void onTimeout(const Http::Request& req, Http::ResponseWriter response) {
-        response
-            .send(Http::Code::Request_Timeout, "Timeout")
-            .then([=](ssize_t) { }, PrintException());
-    }
+  		void onTimeout(const Http::Request& req, Http::ResponseWriter response) {
+        		response
+            		.send(Http::Code::Request_Timeout, "Timeout")
+            		.then([=](ssize_t) { }, PrintException());
+    		}
 
 	bool verifyTx(Tx tx) {
 		vector<string> inputs = tx.getInputs();
@@ -184,6 +182,7 @@ class MyHandler : public Http::Handler {
 		}
 	}
 };
+
 int api_service(){
 	Port port(port_no);
 	Address addr(Ipv4::any(), port);

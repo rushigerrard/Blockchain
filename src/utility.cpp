@@ -5,6 +5,7 @@
 #include "block.h"
 #include "blockchain.h"
 #include "logger.h"
+#include "message.h"
 //libraries for hashing
 #include <openssl/sha.h>
 #include <unistd.h>
@@ -200,4 +201,17 @@ vector<std::string> toStringVector(std::string s){
 	boost::archive::text_iarchive ia(iss);
 	ia >> sv;
 	return sv;
+}
+Message toMessage(std::string s){
+	Message msg;
+	std::istringstream iss(s);
+        boost::archive::text_iarchive ia(iss);
+        ia >> msg;
+	return msg;
+}
+std::string toString(Message msg){
+        std::ostringstream oss;
+        boost::archive::text_oarchive oa(oss);
+        oa << msg;
+        return oss.str();
 }
