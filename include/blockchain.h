@@ -16,6 +16,12 @@ public:
 	void printBC(vector<Block> bchain);
 	string lastHash();
 	int addBlock_Last(Block b); // adds block in last of blockchain and return index,if requre
+	template<class Archive>
+        void serialize(Archive & ar, const unsigned int version){
+               ar & blkchain;
+        }
+	vector<Block> getBlockChain();
+
 };
 
 #endif

@@ -1,5 +1,6 @@
-resources/broadcast_list
-resoruces/candidate_list
+miner
+serverstartup
+resources/*
 pistache/
 log4cplus/
 src/*.o*

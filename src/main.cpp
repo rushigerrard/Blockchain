@@ -5,12 +5,20 @@
 #include "blockchain.h"
 #include<iostream>
 #include<sys/time.h>
-
+#include "logger.h"
+#include "utils.h"
 using namespace std;
+
 int main(){
 	struct timeval start,end,fin;
 	BlockChain bc;
-	cout<<"BlockChain created\n";
+	/* Create a logger and fill out this file*/
+	ofstream fl;
+    string logfile = "./logs/miner_" + toStr(timer()) + ".log";
+    fl.open(logfile.c_str());
+    create_logger(fl, std::cout);
+
+	log_debug("BlockChain created\n");
 	Tx tx1("A","B",30);
 	Tx tx2("B","C",10);
 	Tx tx3("B","D",20);
