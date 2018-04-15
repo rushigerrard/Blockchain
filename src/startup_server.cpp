@@ -1,3 +1,4 @@
+//filename startup_server.cpp
 #include <stdio.h>
 #include <string.h>
 #include <atomic>
@@ -6,6 +7,7 @@
 #include <pistache/client.h>
 #include <string>
 #include <iostream>
+#include <set>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
@@ -30,7 +32,7 @@ int port_no;
 int thr;
 string my_ip;
 string candidate_ip;
-vector<string> candidate_ip_list;
+std::set<string> candidate_ip_list;
 
 
 void stabilization_workflow();
@@ -53,7 +55,7 @@ std::vector<std::string> split_it(const std::string &s, char delim) {
 
 void parse_shared_broadcast_list(string broadcast_list){
         cout<<"Parsing shared broadcast list "<<broadcast_list<<endl;
-        vector<string> updated_broadcast_list = toStringVector(broadcast_list);
+        set<string> updated_broadcast_list = toStringSet(broadcast_list);
 	cout<<"size of updated_broadcast_list: "<< updated_broadcast_list.size();
         cout<<"Writing updated entries to broadcast list"<<endl;
         write_broadcast_list(updated_broadcast_list);
@@ -196,14 +198,17 @@ void ping_service(){
 }
 
 void node_arrival_call(){
-
-        candidate_ip = candidate_ip_list.at(rand() % candidate_ip_list.size());
+	set<string>::const_iterator it(candidate_ip_list.begin());
+	advance(it,rand()%candidate_ip_list.size());
+	candidate_ip = *it;
 
         while(arrival_informed(candidate_ip)){
                 cout<<"Trying a different node"<<endl;
                 sleep(2);
-                candidate_ip = candidate_ip_list.at(rand() % candidate_ip_list.size());
 
+		it = candidate_ip_list.begin();
+		advance(it,rand()%candidate_ip_list.size());
+		candidate_ip = *it;
         }
 }
 string get_own_ip(){
@@ -276,15 +281,17 @@ int main(int argc, char *argv[]){
 		
         //step 3
         bool is_candidate_ip = false;
-        vector<string>  broadcast_ip_list;
-
-        for(unsigned int i = 0; i < candidate_ip_list.size(); i++){
-                if(my_ip.compare(candidate_ip_list.at(i)) == 0){
+        set<string>  broadcast_ip_list;
+	
+	std::set<string>::iterator it;
+	for (it = candidate_ip_list.begin(); it != candidate_ip_list.end(); it++) {
+                if(my_ip.compare(*it) == 0){
                         is_candidate_ip = true;
                 }else{
-                        broadcast_ip_list.push_back(candidate_ip_list.at(i));
+                        broadcast_ip_list.insert(*it);
                 }
-        }
+		
+	}
 
         write_broadcast_list(broadcast_ip_list);
 

@@ -1,5 +1,5 @@
-#ifndef BC_TX_H
-#define BC_TX_H
+#ifndef BC_MSG_H
+#define BC_MSG_H
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>

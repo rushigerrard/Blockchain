@@ -14,6 +14,7 @@
 #include <boost/serialization/base_object.hpp>
 //stl libraries
 #include <vector>
+#include <set>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -131,7 +132,7 @@ class MyHandler : public Http::Handler {
                                         	stream << ends;
                 			}
                 			else {
-                                        	vector<string> broadcast_list = read_broadcast_list();
+                                        	set<string> broadcast_list = read_broadcast_list();
                                         	string share_broadcast_string = toString(broadcast_list);
                                         	response.send(Http::Code::Ok, share_broadcast_string);
                 			}

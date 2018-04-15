@@ -19,10 +19,12 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization/set.hpp>
 #include <boost/serialization/base_object.hpp>
 //other c++ libraries
 #include <fstream>
 #include <iostream>
+#include <set>
 #include <vector>
 #include <string>
 #include <ctime>
@@ -89,20 +91,20 @@ void log_debug(std::string message) {
     *log1 << "[ DEBUG ] " << message << std::endl;
 }
 
-vector<std::string> read_broadcast_list(){
+std::set<std::string> read_broadcast_list(){
 
         cout<<"Broadcast list"<<endl;
         return read_file("./resources/broadcast_list");
 
 }
 
-vector<std::string> read_candidate_list(){
+std::set<std::string> read_candidate_list(){
         cout<<"Candidate list"<<endl;
         return read_file("./resources/candidate_list");
 }
-vector<std::string> read_file(const char* file_name){
+std::set<std::string> read_file(const char* file_name){
         std::ifstream in(file_name);
-        vector<std::string> list;
+        std::set<std::string> list;
         if(!in) {
                 std::cout << "Cannot open input file.\n";
                 return list;
@@ -113,35 +115,33 @@ vector<std::string> read_file(const char* file_name){
         while(in) {
                 in.getline(str, 255);  // delim defaults to '\n'
                 if(in) cout << str << endl;
-                list.push_back(str);
+                list.insert(str);
         }
-        list.pop_back();
         in.close();
 
         return list;
 }
 
-void write_file(string file_name, vector<string> ip_list){
-        filebuf fb;
-        fb.open (file_name,ios::out);
-        ostream os(&fb);
+void write_file(string file_name, set<string> ip_list){
+        std::ofstream fb;
+        fb.open(file_name, std::ios_base::app);
 
-
-        for(unsigned int i = 0; i < ip_list.size(); i++){
-                os << ip_list.at(i)<<endl;
-        }
+	std::set<std::string>::iterator it;
+	for (it = ip_list.begin(); it != ip_list.end(); it++) {
+		fb << *it << endl;
+	}
         fb.close();
         //return 0;
 }
 
 
-void write_broadcast_list(vector<string> list){
+void write_broadcast_list(set<string> list){
         cout<<"Write broadcast list"<<endl;
         return write_file("./resources/broadcast_list", list);
 
 }
 
-void write_candidate_list(vector<string> list){
+void write_candidate_list(set<string> list){
         cout<<"Write candidate list"<<endl;
         return write_file("./resources/candidate_list", list);
 }
@@ -174,6 +174,18 @@ std::string toString(vector<std::string> sv){
 	oa << sv;
 	return oss.str();
 }
+std::string toString(std::set<std::string> ss){
+	std::ostringstream oss;
+	boost::archive::text_oarchive oa(oss);
+	oa << ss;
+	return oss.str();
+}
+std::string toString(Message msg){
+        std::ostringstream oss;
+        boost::archive::text_oarchive oa(oss);
+        oa << msg;
+        return oss.str();
+}
 Tx toTx(std::string s){
 	Tx tx;
 	std::istringstream iss(s);
@@ -202,16 +214,17 @@ vector<std::string> toStringVector(std::string s){
 	ia >> sv;
 	return sv;
 }
+std::set<std::string> toStringSet(std::string s){
+	std::set<std::string> ss;
+	std::istringstream iss(s);
+	boost::archive::text_iarchive ia(iss);
+	ia >> ss;
+	return ss;
+}
 Message toMessage(std::string s){
 	Message msg;
 	std::istringstream iss(s);
         boost::archive::text_iarchive ia(iss);
         ia >> msg;
 	return msg;
-}
-std::string toString(Message msg){
-        std::ostringstream oss;
-        boost::archive::text_oarchive oa(oss);
-        oa << msg;
-        return oss.str();
 }
