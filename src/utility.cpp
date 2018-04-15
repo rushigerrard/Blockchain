@@ -26,7 +26,7 @@
 #include <vector>
 #include <string>
 #include <ctime>
-
+#include<algorithm>
 using namespace std;
 
 Logger *log1;
@@ -63,6 +63,16 @@ Logger& operator<<(Logger& h, std::ostream&(*f)(std::ostream&))
    return h;
 }
 
+/*function to get time in string format*/
+std::string getCurrentTime(){
+	std::string ret_string = "";
+	time_t c_time = time(NULL);
+	ret_string = ctime(&c_time);
+	ret_string.erase(std::remove(ret_string.begin(),ret_string.end(),'\n'),ret_string.end());
+	return ret_string;
+}
+
+
 unsigned long timer() {
     struct timespec currentTime;
     if (clock_gettime(CLOCK_MONOTONIC, &currentTime)) {
@@ -77,16 +87,16 @@ void create_logger(std::ostream& out1, std::ostream& out2) {
 
 void log_info(std::string message) {
     // std::cout << "[ INFO ] " << message << std::endl;
-    *log1 << "[ INFO ] " << message << std::endl;
+    *log1 << "[ INFO ] " << getCurrentTime() <<" : "<< message << std::endl;
 }
 
 void log_error(std::string message) {
-    *log1 << "[ ERROR ] " << message << std::endl;
+    *log1 << " [ ERROR ] " << getCurrentTime() <<" : "<< message << std::endl;
 }
 
 void log_debug(std::string message) {
     // std::cout << "[ DEBUG ] " << message << std::endl;
-    *log1 << "[ DEBUG ] " << message << std::endl;
+    *log1 << " [ DEBUG ] " << getCurrentTime() <<" : "<< message << std::endl;
 }
 
 vector<std::string> read_broadcast_list(){

@@ -11,6 +11,7 @@
 #include<iostream>
 #include<sstream>
 #include<fstream>
+#include<time.h>
 
 #define MICROSECONDS_IN_A_SECOND 1000000
 #define NANOSECONDS_IN_A_SECOND 1000000000
@@ -46,6 +47,8 @@ Message toMessage(std::string);
 
 unsigned long timer();
 
+//get time in string format
+std::string getCurrentTime();
 void create_logger(std::ostream& out1, std::ostream& out2);
 void log_info(std::string message);
 void log_error(std::string message);
