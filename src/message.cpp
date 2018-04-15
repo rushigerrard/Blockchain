@@ -1,8 +1,16 @@
 #include "message.h"
+#include "utils.h"
 #include <cstring>
-#include<iostream>
-#include<sstream>
+#include <iostream>
+#include <sstream>
+#include <set>
 using namespace std;
+
+
+set<string> message_set;
+int message_count;
+//extern string my_ip;
+string my_ip1 = "127.0.0.1";
 
 Message::Message(){
 
@@ -22,18 +30,22 @@ string Message::getMessageBody(){
 ostream& operator<<(ostream &strm,const Message &Message){
         return strm << "id : " << Message.message_id << " body : " << Message.message_body  <<endl;
 }
-/*
-string Message::to_string(){
-        //ostringstream ss;
-        //ss<<strm.rdbuf();
-        
-	return (" id : " + this->message_id + " body : " + this->message_body + "\n");
-}
-*/
-string trial_method(){
-	return "trial";
-}
 
 void message_deserialization(string s){
-	
+	Message m1 = toMessage(s);	
+
 }
+
+string increment_message_count(){
+        static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_lock(&mutex);
+	message_count++;
+        pthread_mutex_unlock(&mutex);
+        return to_string(message_count);
+}
+
+string generate_message_id(){
+	string message_id = my_ip1 + "_" + increment_message_count();
+	return message_id;
+}
+

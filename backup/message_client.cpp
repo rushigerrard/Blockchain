@@ -1,17 +1,18 @@
 #include "../include/message.h"
-#include<stdio.h>
+#include <stdio.h>
 #include <cstring>
-#include<iostream>
-#include<sstream>
+#include <iostream>
+#include <sstream>
 #include <pthread.h>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/base_object.hpp>
+#include <set>
 using namespace std;
 
-
+set<string> message_set;
 int message_count;
 //extern string my_ip;
 string my_ip =  "127.0.0.1";
@@ -57,8 +58,13 @@ int main(){
 		string encodedMessage2 = toString(m2);
 		Message m3 = toMessage(encodedMessage1);
 		Message m4 = toMessage(encodedMessage2);
+		message_set.insert(m3.getMessageId());
+		message_set.insert(m4.getMessageId());
 		cout<<m1_id<<" -> "<<encodedMessage1<<" -> "<<m3.getMessageId()<<endl;
 		cout<<m2_id<<" -> "<<encodedMessage2<<" -> "<<m4.getMessageId()<<endl;
 		cout<< trial_method()<<endl;	
+		cout<< message_set.size()<<endl;
+		cout<<( message_set.find(m3.getMessageId()) != message_set.end())<<endl;
+		cout<<( message_set.find("127.0.0.1_11") != message_set.end())<<endl;
 		return 0;
 }

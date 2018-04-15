@@ -109,8 +109,12 @@ class MyHandler : public Http::Handler {
             			}
         		}else if(req.resource() == "/broadcast"){
 				if(req.method() == Http::Method::Post){
-					
+					message_deserialization(req.body());
+					response.send(Http::Code::Ok,"Result received", MIME(Text, Plain));
+				}else{
+					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
 				}
+
 			}else if (req.resource() == "/arrival"){
                         	cout<<"New node arrived"<<endl;
                         	if(req.method() == Http::Method::Post){
