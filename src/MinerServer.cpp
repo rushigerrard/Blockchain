@@ -78,12 +78,15 @@ class MyHandler : public Http::Handler {
 					response.send(Http::Code::Method_Not_Allowed);
 				}
 			} else if (req.resource() == "/tx"){
-				if(req.method() == Http::Method::Post){
+				std::cout<<"Abhash Is Here\n";
+				if(req.method() != Http::Method::Post){
 					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
 				} else{
+					std::cout<<"Abhash:2 \n";
 					string t = req.body();
 					auto query = req.query();
 					Tx tx = toTx(t);
+					std::cout<<"TX: " << tx.toString()<<std::endl;
 					response.send(Http::Code::Ok, "Transaction received", MIME(Text, Plain));
 					if(query.has("user")) {
 						//broadcast transaction
