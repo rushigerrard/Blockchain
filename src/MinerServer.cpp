@@ -90,6 +90,7 @@ class MyHandler : public Http::Handler {
 					}
 					if(verifyTx(tx)) {
 						txlist.push_back(tx);
+						std::cout<<"TX: " << tx.toString()<<std::endl;
 						//add transaction to block
 					}
 				}

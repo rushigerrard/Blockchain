@@ -174,7 +174,7 @@ std::string toString(vector<std::string> sv){
 	oa << sv;
 	return oss.str();
 }
-std::string toString(Messge msg){
+std::string toString(Message msg){
 	std::ostringstream oss;
 	boost::archive::text_oarchive oa(oss);
 	oa << msg;
