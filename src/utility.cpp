@@ -190,19 +190,6 @@ std::string toString(std::set<std::string> ss){
 	oa << ss;
 	return oss.str();
 }
-Message toMessage(std::string s){
-	Message msg;
-	std::istringstream iss(s);
-        boost::archive::text_iarchive ia(iss);
-        ia >> msg;
-	return msg;
-}
-std::string toString(Message msg){
-        std::ostringstream oss;
-        boost::archive::text_oarchive oa(oss);
-        oa << msg;
-        return oss.str();
-}
 Tx toTx(std::string s){
 	Tx tx;
 	std::istringstream iss(s);
@@ -237,5 +224,19 @@ std::set<std::string> toStringSet(std::string s){
 	boost::archive::text_iarchive ia(iss);
 	ia >> ss;
 	return ss;
+}
+
+Message toMessage(std::string s){
+	Message msg;
+	std::istringstream iss(s);
+        boost::archive::text_iarchive ia(iss);
+        ia >> msg;
+	return msg;
+}
+std::string toString(Message msg){
+        std::ostringstream oss;
+        boost::archive::text_oarchive oa(oss);
+        oa << msg;
+        return oss.str();
 }
 
