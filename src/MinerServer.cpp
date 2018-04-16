@@ -32,7 +32,7 @@ extern int port_no;
 extern int thr;
 extern string my_ip;
 extern string candidate_ip;
-extern vector<string> candidate_ip_list;
+extern vector<string> candidate_ip_set;
 
 //global variables for business logic
 BlockChain bc;

@@ -28,7 +28,7 @@
 #include <vector>
 #include <string>
 #include <ctime>
-#include<algorithm>
+#include <algorithm>
 using namespace std;
 
 Logger *log1;
@@ -114,10 +114,10 @@ std::set<std::string> read_candidate_list(){
 }
 std::set<std::string> read_file(const char* file_name){
         std::ifstream in(file_name);
-        std::set<std::string> list;
+        std::set<std::string> set;
         if(!in) {
                 std::cout << "Cannot open input file.\n";
-                return list;
+                return set;
         }
 
         char str[255];
@@ -125,19 +125,19 @@ std::set<std::string> read_file(const char* file_name){
         while(in) {
                 in.getline(str, 255);  // delim defaults to '\n'
                 if(in) cout << str << endl;
-                list.insert(str);
+                set.insert(str);
         }
         in.close();
 
-        return list;
+        return set;
 }
 
-void write_file(string file_name, set<string> ip_list){
+void write_file(string file_name, set<string> ip_set){
         std::ofstream fb;
         fb.open(file_name, std::ios_base::app);
 
 	std::set<std::string>::iterator it;
-	for (it = ip_list.begin(); it != ip_list.end(); it++) {
+	for (it = ip_set.begin(); it != ip_set.end(); it++) {
 		fb << *it << endl;
 	}
         fb.close();

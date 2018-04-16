@@ -20,21 +20,19 @@
 #include <functional>
 #include "utils.h"
 #include "global.h"
-//#include "string_split.h"
+
 
 using namespace std;
 using namespace Pistache;
 using namespace Pistache::Http;
 
-//#define default_port 9080
-//#define default_thread_count 4
-//#define default_thread_count hardware_concurrency();
+
 extern int port_no;
 extern int thr;
 extern string my_ip;
 extern string candidate_ip;
-//extern vector<string> candidate_ip_list;
-extern set<string> candidate_ip_list;
+extern set<string> candidate_ip_set;
+extern set<string>  broadcast_ip_set;
 
 void stabilization_workflow();
 void api_service();
@@ -199,16 +197,16 @@ void ping_service(){
 }
 
 void node_arrival_call(){
-	set<string>::const_iterator it(candidate_ip_list.begin());
-	advance(it,rand()%candidate_ip_list.size());
+	set<string>::const_iterator it(candidate_ip_set.begin());
+	advance(it,rand()%candidate_ip_set.size());
 	candidate_ip = *it;
 
         while(arrival_informed(candidate_ip)){
                 cout<<"Trying a different node"<<endl;
                 sleep(2);
 
-		it = candidate_ip_list.begin();
-		advance(it,rand()%candidate_ip_list.size());
+		it = candidate_ip_set.begin();
+		advance(it,rand()%candidate_ip_set.size());
 		candidate_ip = *it;
         }
 }
@@ -265,7 +263,7 @@ void initialize(int argc, char *argv[]){
 		}
 		printInitialization();
 		//step 2
-        candidate_ip_list = read_candidate_list();
+        candidate_ip_set = read_candidate_list();
 		
 		
 }
@@ -282,19 +280,19 @@ int main(int argc, char *argv[]){
 		
         //step 3
         bool is_candidate_ip = false;
-        set<string>  broadcast_ip_list;
+        
 	
 	std::set<string>::iterator it;
-	for (it = candidate_ip_list.begin(); it != candidate_ip_list.end(); it++) {
+	for (it = candidate_ip_set.begin(); it != candidate_ip_set.end(); it++) {
                 if(my_ip.compare(*it) == 0){
                         is_candidate_ip = true;
                 }else{
-                        broadcast_ip_list.insert(*it);
+                        broadcast_ip_set.insert(*it);
                 }
 		
 	}
 
-        write_broadcast_list(broadcast_ip_list);
+        write_broadcast_list(broadcast_ip_set);
 
         if(!is_candidate_ip){
                 cout<< "Node is not a candidate node"<<endl;

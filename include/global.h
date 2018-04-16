@@ -17,6 +17,7 @@ int port_no;
 int thr;
 string my_ip="127.0.0.1";
 string candidate_ip;
-set<string> candidate_ip_list;
-
+set<string> candidate_ip_set;
+set<string> broadcast_ip_set;
+set<string> message_set;
 #endif
