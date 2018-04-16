@@ -26,7 +26,6 @@ using namespace std;
 using namespace Pistache;
 using namespace Pistache::Http;
 
-
 extern int port_no;
 extern int thr;
 extern string my_ip;
@@ -183,10 +182,6 @@ int timer_start(std::function<int(void)> func, unsigned int interval)
         return 0;
 }
 void other_thread(){
-        /*while(true){
-                cout<<"I am the other thread"<<endl;
-                sleep(2);
-        }*/
 		api_service();
 }
 void ping_service(){
