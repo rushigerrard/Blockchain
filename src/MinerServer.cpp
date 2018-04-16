@@ -33,13 +33,12 @@ extern int thr;
 extern string my_ip;
 extern string candidate_ip;
 extern vector<string> candidate_ip_set;
-
-//global variables for business logic
-BlockChain bc;
-vector<Tx> txlist;
+extern BlockChain bc;
+extern vector<Tx> txlist;
+//vector<Tx> txlist;
 
 void message_deserialization(string );
-bool verify_tx(Tx );
+//bool verify_tx(Tx );
 string create_broadcast_message(string );
 int broadcast_transaction_message(string );
 int broadcast_solved_block_message(string );
@@ -113,7 +112,8 @@ class MyHandler : public Http::Handler {
 					
 					if(message_previously_read(message)){
 						if(verify_transaction_message(message)) {
-							txlist.push_back(tx);
+							//TODO : Double deserialization from messageString -> toMessage -> getBody -> toTx
+							//txlist.push_back(tx);
 							broadcast_transaction_message(message);
 						}	
 					}
@@ -181,8 +181,9 @@ class MyHandler : public Http::Handler {
             		.then([=](ssize_t) { }, PrintException());
     		}
 
-	/*
-	bool verifyTx(Tx tx) {
+	//TODO
+	//@abhash, need to comment this out and uncomment the code in tx.cpp instead along with the declaration of same function above
+	bool verify_tx(Tx tx) {
 		vector<string> inputs = tx.getInputs();
 		unsigned int check1 = 0;
 		int check2 = 0;
@@ -212,7 +213,7 @@ class MyHandler : public Http::Handler {
 			return false;
 		}
 	}
-	*/
+	
 };
 
 int api_service(){

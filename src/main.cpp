@@ -7,7 +7,7 @@
 #include<sys/time.h>
 #include "logger.h"
 #include "utils.h"
-#include "global.h"
+//#include "global.h"
 using namespace std;
 
 int main(){

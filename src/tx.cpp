@@ -1,13 +1,23 @@
 //filename: tx.cpp
 #include "tx.h"
+#include "block.h"
+#include "blockchain.h"
+//#include "global.h"
 #include<string>
 #include <cstring>
 #include<iostream>
 #include<sstream>
 using namespace std;
+/* //TODO Abhash
+extern BlockChain bc;
+extern vector<Tx> txlist;
+*/
+BlockChain bc;
+vector<Tx> txlist;
 
 Tx::Tx(){
 }
+
 Tx::Tx(string sender, string receiver,int amount){
 	const long double sysTime = time(0);
 	this->TxId = sender + receiver + to_string(sysTime);
@@ -50,11 +60,9 @@ ostream& operator<<(ostream &strm,const Tx &tx){
 }
 
 string Tx::toString(){
-	//ostringstream ss;
-	//ss<<strm.rdbuf();
-	//return ss.str();
 	return (this->sender + "->" + this->receiver +"->" + to_string(this->amount) + "\n");
 }
+
 bool verify_tx(Tx tx) {
 		vector<string> inputs = tx.getInputs();
 		unsigned int check1 = 0;
@@ -85,3 +93,5 @@ bool verify_tx(Tx tx) {
 			return false;
 		}
 	}
+
+

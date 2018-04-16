@@ -9,11 +9,14 @@ using namespace std;
 
 
 extern set<string> message_set;
-extern int message_count;
+//extern int message_count;
+//TODO need to put this in global.h but this is failing. Abhash please take a look.
+int message_count;
 extern string my_ip;
 string my_ip1;
 
-broadcast_client(string, string);
+int broadcast_client(string, string);
+bool verify_tx(Tx );
 
 Message::Message(){
 
@@ -62,18 +65,21 @@ string create_broadcast_message(string transactionMessage){
 
 int broadcast_transaction_message(string broadcast_message){
 	broadcast_client(broadcast_message, "/broadcast_tx");
+	return 0;
 }
 
 int broadcast_solved_block_message(string broadcast_message){
 	broadcast_client(broadcast_message, "/solved_block");
+	return 0;
 }
 
 bool verify_transaction_message(string transaction_message){
 		Message m = toMessage(transaction_message);
-		String message_body = m->getMessageBody();
+		string message_body = m.getMessageBody();
 		Tx tx = toTx(message_body);
 		return verify_tx(tx);
 }
+//TODO
 bool message_previously_read(string message){
-	
+	return true;
 }

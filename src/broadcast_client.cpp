@@ -26,13 +26,21 @@ using namespace Pistache::Http;
 //#define default_port 9080
 //#define default_thread_count 4
 //#define default_thread_count hardware_concurrency();
+/* TODO Abhash same problem
 extern int port_no;
 extern int thr;
 extern string my_ip;
 extern string candidate_ip;
 extern set<string> candidate_ip_set;
 extern set<string> broadcast_ip_set;
+*/
 
+int port_no;
+int thr;
+string my_ip;
+string candidate_ip;
+set<string> candidate_ip_set;
+set<string> broadcast_ip_set;
 int broadcast_client(string serialized_message, string endpoint){
         cout<<"Ping candidate node : "<<candidate_ip<<endl;
 
