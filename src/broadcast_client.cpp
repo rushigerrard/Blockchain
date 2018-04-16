@@ -51,8 +51,8 @@ int broadcast_client(string serialized_message, string endpoint){
 
         int retry = 1;
         string port_no = "9080";
-
-		for(it = broadcast_set.begin(); it != broadcast_set.end(); it++){
+	std::set<string>::iterator it;
+		for( it = broadcast_ip_set.begin(); it != broadcast_ip_set.end(); it++){
 			string candidate_ip = *it;
 			string page = "http://" + candidate_ip + ":" + port_no + endpoint;
 
