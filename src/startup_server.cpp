@@ -17,20 +17,21 @@
 #include <thread>
 #include <functional>
 #include "utils.h"
+#include "global.h"
 //#include "string_split.h"
 
 using namespace std;
 using namespace Pistache;
 using namespace Pistache::Http;
 
-#define default_port 9080
+//#define default_port 9080
 //#define default_thread_count 4
-#define default_thread_count hardware_concurrency();
-int port_no;
-int thr;
-string my_ip;
-string candidate_ip;
-vector<string> candidate_ip_list;
+//#define default_thread_count hardware_concurrency();
+extern int port_no;
+extern int thr;
+extern string my_ip;
+extern string candidate_ip;
+extern vector<string> candidate_ip_list;
 
 
 void stabilization_workflow();

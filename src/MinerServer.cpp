@@ -22,7 +22,7 @@
 #include "blockchain.h"
 #include "block.h"
 #include "utils.h"
-
+//#include "global.h"
 using namespace std;
 using namespace Pistache;
 

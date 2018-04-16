@@ -1,3 +1,4 @@
+//#include "global.h"
 #include "message.h"
 #include "utils.h"
 #include <cstring>
@@ -7,11 +8,10 @@
 using namespace std;
 
 
-set<string> message_set;
+extern set<string> message_set;
 int message_count;
-//extern string my_ip;
-string my_ip1 = "127.0.0.1";
-
+extern string my_ip;
+string my_ip1;
 Message::Message(){
 
 }
@@ -45,6 +45,7 @@ string increment_message_count(){
 }
 
 string generate_message_id(){
+	//my_ip = "127.0.0.1";
 	string message_id = my_ip1 + "_" + increment_message_count();
 	return message_id;
 }
