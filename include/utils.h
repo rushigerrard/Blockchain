@@ -8,6 +8,7 @@
 #include "blockchain.h"
 #include <string>
 #include <vector>
+#include <set>
 #include<iostream>
 #include<sstream>
 #include<fstream>
@@ -22,27 +23,29 @@
 std::string sha256(std::string s);
 
 //functions to write into files
-void write_broadcast_list(vector<std::string>);
-void write_candidate_list(vector<std::string>);
-void write_file(string, vector<std::string>);
+void write_broadcast_list(std::set<std::string>);
+void write_candidate_list(std::set<std::string>);
+void write_file(string, std::set<std::string>);
 
 //function to read from files
-vector<std::string> read_broadcast_list();
-vector<std::string> read_candidate_list();
-vector<std::string> read_file(const char* );
+std::set<std::string> read_broadcast_list();
+std::set<std::string> read_candidate_list();
+std::set<std::string> read_file(const char* );
 
 //function to convert objects into string
 
-std::string toString(Tx tx);
-std::string toString(Block bl);
-std::string toString(BlockChain bc);
-std::string toString(vector<std::string> vs);
+std::string toString(Tx);
+std::string toString(Block);
+std::string toString(BlockChain);
+std::string toString(vector<std::string>);
+std::string toString(std::set<std::string>);
 std::string toString(Message msg);
 
 Tx toTx(std::string);
 Block toBlock(std::string);
 BlockChain toBlockChain(std::string);
-vector<std::string> toStringVector(std::string);
+std::vector<std::string> toStringVector(std::string);
+std::set<std::string> toStringSet(std::string);
 Message toMessage(std::string);
 
 unsigned long timer();
