@@ -9,9 +9,12 @@ using namespace std;
 
 
 extern set<string> message_set;
-int message_count;
+extern int message_count;
 extern string my_ip;
 string my_ip1;
+
+broadcast_client(string, string);
+
 Message::Message(){
 
 }
@@ -50,3 +53,27 @@ string generate_message_id(){
 	return message_id;
 }
 
+string create_broadcast_message(string transactionMessage){
+	string message_id = generate_message_id();
+	string message_body = transactionMessage;
+	Message m(message_id, message_body);
+	return toString(m);
+}
+
+int broadcast_transaction_message(string broadcast_message){
+	broadcast_client(broadcast_message, "/broadcast_tx");
+}
+
+int broadcast_solved_block_message(string broadcast_message){
+	broadcast_client(broadcast_message, "/solved_block");
+}
+
+bool verify_transaction_message(string transaction_message){
+		Message m = toMessage(transaction_message);
+		String message_body = m->getMessageBody();
+		Tx tx = toTx(message_body);
+		return verify_tx(tx);
+}
+bool message_previously_read(string message){
+	
+}

@@ -39,6 +39,12 @@ BlockChain bc;
 vector<Tx> txlist;
 
 void message_deserialization(string );
+bool verify_tx(Tx );
+string create_broadcast_message(string );
+int broadcast_transaction_message(string );
+int broadcast_solved_block_message(string );
+bool verify_transaction_message(string ); 
+bool message_previously_read(string );
 
 struct PrintException {
     void operator()(std::exception_ptr exc) const {
@@ -84,31 +90,50 @@ class MyHandler : public Http::Handler {
 				if(req.method() == Http::Method::Post){
 					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
 				} else{
-					string t = req.body();
+					string reqString = req.body();
 					auto query = req.query();
-					Tx tx = toTx(t);
+					Tx tx = toTx(reqString);
 					response.send(Http::Code::Ok, "Transaction received", MIME(Text, Plain));
-					if(query.has("user")) {
-						//broadcast transaction
-					}
-					if(verifyTx(tx)) {
+					
+					if(verify_tx(tx)) {
 						txlist.push_back(tx);
 						//add transaction to block
+						string broadcast_message = create_broadcast_message(reqString);
+						broadcast_transaction_message(broadcast_message);
 					}
 				}
-			} else if(req.resource() == "/solved_block"){
-                        	if(req.method() == Http::Method::Post){
-                                	response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
-                        	} else{
-                                	response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
-                        	}
-                	} else if (req.resource() == "/static") {
-            			if (req.method() == Http::Method::Get) {
-                			Http::serveFile(response, "README.md").then([](ssize_t bytes) {
-                    				std::cout << "Sent " << bytes << " bytes" << std::endl;
-                			}, Async::NoExcept);
-            			}
-        		}else if(req.resource() == "/broadcast"){
+			}else if (req.resource() == "/broadcast_tx"){
+				if(req.method() == Http::Method::Post){
+					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
+				} else{
+					string message = req.body();
+					auto query = req.query();
+					
+					response.send(Http::Code::Ok, "Transaction received", MIME(Text, Plain));
+					
+					if(message_previously_read(message)){
+						if(verify_transaction_message(message)) {
+							txlist.push_back(tx);
+							broadcast_transaction_message(message);
+						}	
+					}
+					
+				}
+			}
+			else if(req.resource() == "/solved_block"){
+            	if(req.method() == Http::Method::Post){
+					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
+				} else{
+                	response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
+                }
+            }
+			else if (req.resource() == "/static") {
+            	if (req.method() == Http::Method::Get) {
+					Http::serveFile(response, "README.md").then([](ssize_t bytes) {
+						std::cout << "Sent " << bytes << " bytes" << std::endl;
+					}, Async::NoExcept);
+				}
+        	}else if(req.resource() == "/broadcast"){
 				if(req.method() == Http::Method::Post){
 					message_deserialization(req.body());
 					response.send(Http::Code::Ok,"Result received", MIME(Text, Plain));
@@ -156,6 +181,7 @@ class MyHandler : public Http::Handler {
             		.then([=](ssize_t) { }, PrintException());
     		}
 
+	/*
 	bool verifyTx(Tx tx) {
 		vector<string> inputs = tx.getInputs();
 		unsigned int check1 = 0;
@@ -186,6 +212,7 @@ class MyHandler : public Http::Handler {
 			return false;
 		}
 	}
+	*/
 };
 
 int api_service(){
