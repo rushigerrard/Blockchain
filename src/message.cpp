@@ -9,10 +9,10 @@ using namespace std;
 
 
 extern set<string> message_set;
-//extern int message_count;
+extern int message_count;
 extern string my_ip;
 string my_ip1;
-int message_count;
+//int message_count;
 int broadcast_client(string, string);
 bool verify_tx(Tx);
 Message::Message(){
@@ -49,7 +49,7 @@ string increment_message_count(){
 
 string generate_message_id(){
 	//my_ip = "127.0.0.1";
-	string message_id = my_ip1 + "_" + increment_message_count();
+	string message_id = my_ip + "_" + increment_message_count();
 	return message_id;
 }
 

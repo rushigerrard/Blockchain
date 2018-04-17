@@ -8,8 +8,8 @@
 #include <sstream>
 using namespace std;
 
-BlockChain bc1;
-vector<Tx> txlist1;
+extern BlockChain bc;
+extern vector<Tx> txlist;
 
 Tx::Tx(){
 }
@@ -64,7 +64,7 @@ bool verify_tx(Tx tx) {
 		vector<string> inputs = tx.getInputs();
 		unsigned int check1 = 0;
 		int check2 = 0;
-		vector<Block> blkchain = bc1.getBlockChain();
+		vector<Block> blkchain = bc.getBlockChain();
 		for(unsigned int i = 0; i < blkchain.size(); i++) {
 			Block blk = blkchain[i];
 			vector<Tx> tx_list = blk.getTxList();

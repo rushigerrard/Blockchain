@@ -35,8 +35,8 @@ extern string candidate_ip;
 extern vector<string> candidate_ip_set;
 
 //global variables for business logic
-BlockChain bc;
-vector<Tx> txlist;
+extern BlockChain bc;
+extern vector<Tx> txlist;
 
 void message_deserialization(string );
 bool verify_tx(Tx );

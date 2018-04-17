@@ -3,8 +3,8 @@
 #include "tx.h"
 #include "block.h"
 #include "blockchain.h"
-#include<iostream>
-#include<sys/time.h>
+#include <iostream>
+#include <sys/time.h>
 #include "logger.h"
 #include "utils.h"
 #include "global.h"
