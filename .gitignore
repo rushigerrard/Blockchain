@@ -2,6 +2,7 @@ miner
 serverstartup
 resources/broadcast_list
 resources/candidate_list
+log/*
 pistache/
 log4cplus/
 src/*.o*
