@@ -113,7 +113,8 @@ class MyHandler : public Http::Handler {
 					
 					if(message_previously_read(message)){
 						if(verify_transaction_message(message)) {
-							txlist.push_back(tx);
+							//TODO double serialization
+							//txlist.push_back(tx);
 							broadcast_transaction_message(message);
 						}	
 					}

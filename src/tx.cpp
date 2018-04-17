@@ -1,10 +1,15 @@
 //filename: tx.cpp
 #include "tx.h"
+#include "block.h"
+#include "blockchain.h"
 #include<string>
 #include <cstring>
 #include<iostream>
 #include<sstream>
 using namespace std;
+
+BlockChain bc;
+vector<Tx> txlist;
 
 Tx::Tx(){
 }
