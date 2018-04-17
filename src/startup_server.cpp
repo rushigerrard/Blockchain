@@ -280,12 +280,13 @@ int main(int argc, char *argv[]){
         write_broadcast_list(broadcast_ip_set);
 
         if(!is_candidate_ip){
-                cout<< "Node is not a candidate node"<<endl;
+
 		log_info("Node is not a candidate node\n");
-		log_info("Informing the cluster of its arrival");
-                cout<<"Informing the cluster of its arrival"<<endl;
+		log_info("Informing the cluster of its arrival\n");
+
 				stabilization_workflow();
         }else{
+		log_info("Node is a candidate node\n");
 		api_service();
 	}
         return 0;

@@ -23,6 +23,7 @@
 #include "blockchain.h"
 #include "block.h"
 #include "utils.h"
+#include "logger.h"
 //#include "global.h"
 using namespace std;
 using namespace Pistache;
@@ -93,8 +94,9 @@ class MyHandler : public Http::Handler {
 					auto query = req.query();
 					Tx tx = toTx(reqString);
 					response.send(Http::Code::Ok, "Transaction received", MIME(Text, Plain));
-					
+					log_info("Transaction received from user\n");		
 					if(verify_tx(tx)) {
+						log_info("Transaction successfully verified\nAdding it to a new block\n");
 						txlist.push_back(tx);
 						//add transaction to block
 						string broadcast_message = create_broadcast_message(reqString);
@@ -117,7 +119,7 @@ class MyHandler : public Http::Handler {
 							broadcast_transaction_message(message);
 						}	
 					}else{
-						cout<<"Transaction previously received. Dropping current request"<<endl;
+						log_info("Transaction previously received. Dropping current request\n");
 					}
 					
 				}
@@ -184,43 +186,14 @@ class MyHandler : public Http::Handler {
             		.then([=](ssize_t) { }, PrintException());
     		}
 
-	/*
-	bool verifyTx(Tx tx) {
-		vector<string> inputs = tx.getInputs();
-		unsigned int check1 = 0;
-		int check2 = 0;
-		vector<Block> blkchain = bc.getBlockChain();
-		for(unsigned int i = 0; i < blkchain.size(); i++) {
-			Block blk = blkchain[i];
-			vector<Tx> tx_list = blk.getTxList();
-			for(unsigned int j = 0; j < tx_list.size(); i++) {
-				vector<string> inputs1 = tx_list[j].getInputs();
-				//check1 = check if the input transactions are present
-				for(unsigned int k = 0; k < inputs.size(); k++) {
-					if(!inputs[k].compare(tx_list[j].getId())) {
-						check1++;
-					}
-					//check2 = check if the input transaction is not input of other transactions
-					for(unsigned int l = 0; l < inputs1.size(); i++) {
-						if(!inputs[k].compare(inputs1[l])) {
-							check2++;
-						}
-					}
-				}
-			}
-		}
-		if((check1 == inputs.size()) & (check2 == 0)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	*/
 };
 
 int api_service(){
-	Port port(port_no);
-	Address addr(Ipv4::any(), port);
+
+	log_info("Starting API server\n");
+
+    Port port(port_no);
+    Address addr(Ipv4::any(), port);
 
 
     //Here server is a pointer to HTTP::Endpoint addr
@@ -232,7 +205,7 @@ int api_service(){
     server->init(opts);
     server->setHandler(Http::make_handler<MyHandler>());
     server->serve();
-
+	log_info("Shutting down API server\n");
     std::cout << "Shutdowning server" << std::endl;
     server->shutdown();
 	return 0;
