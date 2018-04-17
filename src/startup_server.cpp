@@ -33,6 +33,9 @@ extern string candidate_ip;
 extern set<string> candidate_ip_set;
 extern set<string>  broadcast_ip_set;
 
+extern BlockChain bc;
+extern vector<Tx> txlist;
+
 void stabilization_workflow();
 void api_service();
 
@@ -253,39 +256,37 @@ void initialize(int argc, char *argv[]){
 int main(int argc, char *argv[]){
 	
 	if(argc >= 5){
-                printUsage();
-                exit (EXIT_FAILURE);
-        }
+    	printUsage();
+        exit (EXIT_FAILURE);
+    }
 
 	initialize(argc, argv);
-	 /* Create a logger and fill out this file*/
-        ofstream fl;
-    	string logfile = "./logs/serverstartup__" + toStr(timer()) + ".log";
-    	fl.open(logfile.c_str());
-    	create_logger(fl, std::cout);		
+	/* Create a logger and fill out this file*/
+    ofstream fl;
+   	string logfile = "./logs/serverstartup__" + toStr(timer()) + ".log";
+   	fl.open(logfile.c_str());
+    create_logger(fl, std::cout);		
         
 	//step 3
-        bool is_candidate_ip = false;
+    bool is_candidate_ip = false;
         
 	
 	std::set<string>::iterator it;
 	for (it = candidate_ip_set.begin(); it != candidate_ip_set.end(); it++) {
-                if(my_ip.compare(*it) == 0){
-                        is_candidate_ip = true;
-                }else{
-                        broadcast_ip_set.insert(*it);
-                }
+    	if(my_ip.compare(*it) == 0){
+        	is_candidate_ip = true;
+        }else{
+        	broadcast_ip_set.insert(*it);
+        }
 	}
 
-        write_broadcast_list(broadcast_ip_set);
+    write_broadcast_list(broadcast_ip_set);
 
-        if(!is_candidate_ip){
-
+    if(!is_candidate_ip){
 		log_info("Node is not a candidate node\n");
 		log_info("Informing the cluster of its arrival\n");
-
-				stabilization_workflow();
-        }else{
+		stabilization_workflow();
+    }else{
 		log_info("Node is a candidate node\n");
 		api_service();
 	}
