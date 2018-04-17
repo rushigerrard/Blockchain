@@ -86,7 +86,7 @@ class MyHandler : public Http::Handler {
 					response.send(Http::Code::Method_Not_Allowed);
 				}
 			} else if (req.resource() == "/tx"){
-				if(req.method() == Http::Method::Post){
+				if(req.method() == Http::Method::Get){
 					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
 				} else{
 					string reqString = req.body();
