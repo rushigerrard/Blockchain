@@ -2,14 +2,14 @@
 #include "tx.h"
 #include "block.h"
 #include "blockchain.h"
-#include<string>
+#include <string>
 #include <cstring>
-#include<iostream>
-#include<sstream>
+#include <iostream>
+#include <sstream>
 using namespace std;
 
-BlockChain bc;
-vector<Tx> txlist;
+BlockChain bc1;
+vector<Tx> txlist1;
 
 Tx::Tx(){
 }
@@ -64,7 +64,7 @@ bool verify_tx(Tx tx) {
 		vector<string> inputs = tx.getInputs();
 		unsigned int check1 = 0;
 		int check2 = 0;
-		vector<Block> blkchain = bc.getBlockChain();
+		vector<Block> blkchain = bc1.getBlockChain();
 		for(unsigned int i = 0; i < blkchain.size(); i++) {
 			Block blk = blkchain[i];
 			vector<Tx> tx_list = blk.getTxList();
@@ -89,4 +89,4 @@ bool verify_tx(Tx tx) {
 		} else {
 			return false;
 		}
-	}
+}

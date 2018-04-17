@@ -1,5 +1,5 @@
-#ifndef BC_GLBL_H
-#define BC_GLBL_H
+#ifndef BC_BLKCHN_GLBL_H
+#define BC_BLKCHN_GLBL_H
 
 
 #include <stdio.h>
@@ -20,4 +20,5 @@ string candidate_ip;
 set<string> candidate_ip_set;
 set<string> broadcast_ip_set;
 set<string> message_set;
+
 #endif
