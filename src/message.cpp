@@ -7,14 +7,13 @@
 #include <set>
 using namespace std;
 
-
 extern set<string> message_set;
 extern int message_count;
 extern string my_ip;
 string my_ip1;
-//int message_count;
 int broadcast_client(string, string);
 bool verify_tx(Tx);
+
 Message::Message(){
 
 }
@@ -34,10 +33,6 @@ ostream& operator<<(ostream &strm,const Message &Message){
         return strm << "id : " << Message.message_id << " body : " << Message.message_body  <<endl;
 }
 
-void message_deserialization(string s){
-	Message m1 = toMessage(s);	
-
-}
 
 string increment_message_count(){
         static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -48,7 +43,6 @@ string increment_message_count(){
 }
 
 string generate_message_id(){
-	//my_ip = "127.0.0.1";
 	string message_id = my_ip + "_" + increment_message_count();
 	return message_id;
 }
@@ -77,5 +71,15 @@ bool verify_transaction_message(string transaction_message){
 		return verify_tx(tx);
 }
 bool message_previously_read(string message){
-return true;	
+	Message m = toMessage(message);
+	string message_id = m.getMessageId();
+	
+	if(message_set.find(message_id) == message_set.end()){
+		//seeing the message for the first time
+		message_set.insert(message_id);
+		
+		//inform that message was not seen before
+		return false;
+	}
+	return true;	
 }

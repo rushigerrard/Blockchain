@@ -38,7 +38,6 @@ extern vector<string> candidate_ip_set;
 extern BlockChain bc;
 extern vector<Tx> txlist;
 
-void message_deserialization(string );
 bool verify_tx(Tx );
 string create_broadcast_message(string );
 int broadcast_transaction_message(string );
@@ -103,12 +102,12 @@ class MyHandler : public Http::Handler {
 					}
 				}
 			}else if (req.resource() == "/broadcast_tx"){
-				if(req.method() == Http::Method::Post){
-					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
+				if(req.method() == Http::Method::Get){
+					
+					response.send(Http::Code::Ok, "Transaction Received", MIME(Text, Plain));
 				} else{
 					string message = req.body();
-					auto query = req.query();
-					
+					cout<<"Received transaction from a node"<<endl;
 					response.send(Http::Code::Ok, "Transaction received", MIME(Text, Plain));
 					
 					if(message_previously_read(message)){
@@ -117,13 +116,17 @@ class MyHandler : public Http::Handler {
 							//txlist.push_back(tx);
 							broadcast_transaction_message(message);
 						}	
+					}else{
+						cout<<"Transaction previously received. Dropping current request"<<endl;
 					}
 					
 				}
 			}
 			else if(req.resource() == "/solved_block"){
-            	if(req.method() == Http::Method::Post){
-					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
+            			if(req.method() == Http::Method::Post){
+					string message = req.body();
+					response.send(Http::Code::Ok, "Block received", MIME(Text, Plain));
+					
 				} else{
                 	response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
                 }
@@ -136,7 +139,6 @@ class MyHandler : public Http::Handler {
 				}
         	}else if(req.resource() == "/broadcast"){
 				if(req.method() == Http::Method::Post){
-					message_deserialization(req.body());
 					response.send(Http::Code::Ok,"Result received", MIME(Text, Plain));
 				}else{
 					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));

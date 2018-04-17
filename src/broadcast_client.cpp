@@ -59,7 +59,7 @@ int broadcast_client(string serialized_message, string endpoint){
 			cout<<"Trying the API : "<<page<<endl;
 
 			for(int i = 0; i < retry; i++){
-					auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(my_ip).send();
+					auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(serialized_message).send();
 			resp.then([&](Http::Response response) {
 					++completedRequests;
 

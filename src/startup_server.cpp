@@ -20,7 +20,7 @@
 #include <functional>
 #include "utils.h"
 #include "global.h"
-
+#include "logger.h"
 
 using namespace std;
 using namespace Pistache;
@@ -36,20 +36,6 @@ extern set<string>  broadcast_ip_set;
 void stabilization_workflow();
 void api_service();
 
-template<typename Out>
-void split(const std::string &s, char delim, Out result) {
-    std::stringstream ss(s);
-    std::string item;
-    while (std::getline(ss, item, delim)) {
-        *(result++) = item;
-    }
-}
-
-std::vector<std::string> split_it(const std::string &s, char delim) {
-    std::vector<std::string> elems;
-    split(s, delim, std::back_inserter(elems));
-    return elems;
-}
 
 void parse_shared_broadcast_list(string broadcast_list){
         cout<<"Parsing shared broadcast list "<<broadcast_list<<endl;
@@ -231,8 +217,8 @@ void printInitialization(){
 	
 	cout<< "Node IP address : "<< my_ip << endl;
 	cout<< "Server started on port : "<< port_no << endl;
-	cout << "Cores = " << hardware_concurrency() << endl;
-    cout << "Using " << thr << " threads" << endl;
+	cout<< "Cores = " << hardware_concurrency() << endl;
+	cout<< "Using " << thr << " threads" << endl;
 }
 void initialize(int argc, char *argv[]){
 		if(argc > 1){
@@ -266,14 +252,19 @@ void initialize(int argc, char *argv[]){
 
 int main(int argc, char *argv[]){
 	
-		if(argc >= 5){
+	if(argc >= 5){
                 printUsage();
                 exit (EXIT_FAILURE);
         }
 
-		initialize(argc, argv);
-		
-        //step 3
+	initialize(argc, argv);
+	 /* Create a logger and fill out this file*/
+        ofstream fl;
+    	string logfile = "./logs/serverstartup__" + toStr(timer()) + ".log";
+    	fl.open(logfile.c_str());
+    	create_logger(fl, std::cout);		
+        
+	//step 3
         bool is_candidate_ip = false;
         
 	
@@ -284,19 +275,19 @@ int main(int argc, char *argv[]){
                 }else{
                         broadcast_ip_set.insert(*it);
                 }
-		
 	}
 
         write_broadcast_list(broadcast_ip_set);
 
         if(!is_candidate_ip){
                 cout<< "Node is not a candidate node"<<endl;
+		log_info("Node is not a candidate node\n");
+		log_info("Informing the cluster of its arrival");
                 cout<<"Informing the cluster of its arrival"<<endl;
 				stabilization_workflow();
         }else{
-			api_service();
-		}
-
+		api_service();
+	}
         return 0;
 }
 
