@@ -1,7 +1,9 @@
 #include "blockchain.h"
 #include <vector>
 #include<iostream>
+#include <set>
 #include "block.h"
+#include "tx.h"
 using namespace std;
 
 
@@ -34,7 +36,15 @@ vector<Block> BlockChain::getBlockChain() {
 }
 //constructor
 BlockChain::BlockChain(){
-	//cout<<"Abhash: "<<endl;
+	//creating genesis block with default transactions
+	std::set<std::string> base = {"A", "B", "C", "D"};
+	std::set<std::string>::iterator it;
+	Block bl;
+	for(it = base.begin(); it != base.end(); it++){
+		std::vector<std::string> inputs = {"_default_"};
+		Tx tx("ADMIN", *it, inputs, 100);
+		bl.addTx(tx);
+	}
 	Block blk(10);	//create genesis Block with default values
 	blkchain.push_back(blk);
 }

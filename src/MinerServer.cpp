@@ -123,23 +123,26 @@ class MyHandler : public Http::Handler {
 					}
 					
 				}
-			}
-			else if(req.resource() == "/solved_block"){
+			}else if(req.resource() == "/blockchain"){
+				if(req.method() == Http::Method::Post){
+					response.send(Http::Code::Ok, "Send GET request for blockchain", MIME(Text, Plain));
+				} else if(req.method() == Http::Method::Get) {
+					response.send(Http::Code::Ok, toString(bc), MIME(Text, Plain));
+				}
+			}else if(req.resource() == "/solved_block"){
             			if(req.method() == Http::Method::Post){
 					string message = req.body();
-					response.send(Http::Code::Ok, "Block received", MIME(Text, Plain));
-					
+					response.send(Http::Code::Ok, "Block received", MIME(Text, Plain));	
 				} else{
-                	response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
-                }
-            }
-			else if (req.resource() == "/static") {
-            	if (req.method() == Http::Method::Get) {
+                			response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
+                		}
+            		}else if (req.resource() == "/static") {
+            			if (req.method() == Http::Method::Get) {
 					Http::serveFile(response, "README.md").then([](ssize_t bytes) {
 						std::cout << "Sent " << bytes << " bytes" << std::endl;
 					}, Async::NoExcept);
 				}
-        	}else if(req.resource() == "/broadcast"){
+        		}else if(req.resource() == "/broadcast"){
 				if(req.method() == Http::Method::Post){
 					response.send(Http::Code::Ok,"Result received", MIME(Text, Plain));
 				}else{
