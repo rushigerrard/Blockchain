@@ -76,6 +76,8 @@ int broadcast_client(string serialized_message, string endpoint){
                         Async::Barrier<std::vector<Http::Response>> barrier(sync);
                 }
         client.shutdown();
+	 //V IMPORTANT - don't remove sleep(2)
+	sleep(2);
         if(success == true)
                 return 0;
         else

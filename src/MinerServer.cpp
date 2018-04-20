@@ -219,10 +219,9 @@ int api_service(){
         .flags(Tcp::Options::InstallSignalHandler);
     server->init(opts);
     server->setHandler(Http::make_handler<MyHandler>());
-	log_info("Starting API server\n");
+	log_info("Starting API server");
     server->serve();
-    std::cout << "Shutdowning server" << std::endl;
     server->shutdown();
-	log_info("Shutting down API server\n");	
+	log_info("Shutting down API server");	
 	return 0;
 }
