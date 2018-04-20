@@ -1,7 +1,9 @@
 //filename: tx.cpp
+#include "logger.h"
 #include "tx.h"
 #include "block.h"
 #include "blockchain.h"
+#include "utils.h"
 #include <string>
 #include <cstring>
 #include <iostream>
@@ -55,12 +57,10 @@ ostream& operator<<(ostream &strm,const Tx &tx){
 }
 
 string Tx::toString(){
-	//ostringstream ss;
-	//ss<<strm.rdbuf();
-	//return ss.str();
-	return (this->sender + "->" + this->receiver +"->" + to_string(this->amount) + "\n");
+	return (this->sender + "->" + this->receiver +"->" + to_string(this->amount));
 }
 bool verify_tx(Tx tx) {
+		log_info("Verifying transaction " + tx.toString());
 		vector<string> inputs = tx.getInputs();
 		unsigned int check1 = 0;
 		int check2 = 0;
@@ -85,8 +85,11 @@ bool verify_tx(Tx tx) {
 			}
 		}
 		if((check1 == inputs.size()) & (check2 == 0)) {
+			log_info("Transaction " + tx.toString() + " is valid");
 			return true;
 		} else {
+			log_info("Transaction " + tx.toString() + " is invalid");
 			return false;
 		}
 }
+

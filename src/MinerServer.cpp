@@ -49,9 +49,10 @@ bool message_previously_read(string );
 struct PrintException {
     void operator()(std::exception_ptr exc) const {
         try {
-            std::rethrow_exception(exc);
+//            std::rethrow_exception(exc);
         } catch (const std::exception& e) {
-            std::cerr << "An exception occured: " << e.what() << std::endl;
+//            std::cerr << "An exception occured: " << e.what() << std::endl;
+			log_error("An exception occured " + string(e.what()));
         }
     }
 };
@@ -63,11 +64,13 @@ class MyHandler : public Http::Handler {
 		Http::ResponseWriter response) {
 			if (req.resource() == "/ping") {
 				if (req.method() == Http::Method::Post) {
-					std::cout<<"Got a ping call from : "<<req.body()<<endl;
+					//std::cout<<"Got a ping call from : "<<req.body()<<endl;
+					log_info("Received ping request from " + req.body());
 					using namespace Http;
 					auto query = req.query();
 					if (query.has("chunked")) {
 						std::cout << "Using chunked encoding" << std::endl;
+						log_info("Using chunked encoding");
 						response.headers()
 							.add<Header::Server>("pistache/0.1")
 							.add<Header::ContentType>(MIME(Text, Plain));
@@ -81,20 +84,23 @@ class MyHandler : public Http::Handler {
 					}
 				}
 			} else if (req.resource() == "/echo") {
+				log_info("Received echo request from " + req.body());
 				if (req.method() == Http::Method::Post) {
 					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
 				} else {
 					response.send(Http::Code::Method_Not_Allowed);
 				}
 			} else if (req.resource() == "/tx"){
+
 				if(req.method() == Http::Method::Get){
 					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
 				} else{
+					log_info("Received new transaction from user");
 					string reqString = req.body();
 					auto query = req.query();
 					Tx tx = toTx(reqString);
+					log_info("Received transaction is " + tx.toString());
 					response.send(Http::Code::Ok, "Transaction received", MIME(Text, Plain));
-					log_info("Transaction received from user\n");		
 					if(verify_tx(tx)) {
 						log_info("Transaction successfully verified\nAdding it to a new block\n");
 						txlist.push_back(tx);
@@ -108,6 +114,8 @@ class MyHandler : public Http::Handler {
 					
 					response.send(Http::Code::Ok, "Transaction Received", MIME(Text, Plain));
 				} else{
+					log_info("Received new transaction from Miner node");
+					
 					string message = req.body();
 					cout<<"Received transaction from a node"<<endl;
 					response.send(Http::Code::Ok, "Transaction received", MIME(Text, Plain));
@@ -124,39 +132,36 @@ class MyHandler : public Http::Handler {
 					
 				}
 			}else if(req.resource() == "/blockchain"){
+				log_info("Received a GET blockchain request");
+					
 				if(req.method() == Http::Method::Post){
 					response.send(Http::Code::Ok, "Send GET request for blockchain", MIME(Text, Plain));
 				} else if(req.method() == Http::Method::Get) {
+					log_info("Sending current blockchain");
 					response.send(Http::Code::Ok, toString(bc), MIME(Text, Plain));
 				}
 			}else if(req.resource() == "/solved_block"){
-            			if(req.method() == Http::Method::Post){
+            	log_info("Received new solved block");
+				if(req.method() == Http::Method::Post){
 					string message = req.body();
 					response.send(Http::Code::Ok, "Block received", MIME(Text, Plain));	
 				} else{
-                			response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
-                		}
-            		}else if (req.resource() == "/static") {
-            			if (req.method() == Http::Method::Get) {
+                	response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
+                }
+			}else if (req.resource() == "/static") {
+            	if (req.method() == Http::Method::Get) {
 					Http::serveFile(response, "README.md").then([](ssize_t bytes) {
 						std::cout << "Sent " << bytes << " bytes" << std::endl;
 					}, Async::NoExcept);
 				}
-        		}else if(req.resource() == "/broadcast"){
-				if(req.method() == Http::Method::Post){
-					response.send(Http::Code::Ok,"Result received", MIME(Text, Plain));
-				}else{
-					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
-				}
-
-			}else if (req.resource() == "/arrival"){
-                        	cout<<"New node arrived"<<endl;
+        	}else if (req.resource() == "/arrival"){
+				log_info("New node arrived");
                         	if(req.method() == Http::Method::Post){
                                		using namespace Http;
 
                 			auto query = req.query();
                 			if (query.has("chunked")) {
-                    				std::cout << "Using chunked encoding" << std::endl;
+									log_info("Using chunked encoding");
 
                     				response.headers()
                         			.add<Header::Server>("pistache/0.1")
@@ -192,24 +197,20 @@ class MyHandler : public Http::Handler {
 };
 
 int api_service(){
-
-	log_info("Starting API server\n");
-
+	log_info("Configuring API server...");
     Port port(port_no);
     Address addr(Ipv4::any(), port);
-
-
-    //Here server is a pointer to HTTP::Endpoint addr
+	//Here server is a pointer to HTTP::Endpoint addr
     auto server = std::make_shared<Http::Endpoint>(addr);
-
-    auto opts = Http::Endpoint::options()
+	auto opts = Http::Endpoint::options()
         .threads(thr)
         .flags(Tcp::Options::InstallSignalHandler);
     server->init(opts);
     server->setHandler(Http::make_handler<MyHandler>());
+	log_info("Starting API server\n");
     server->serve();
-	log_info("Shutting down API server\n");
     std::cout << "Shutdowning server" << std::endl;
     server->shutdown();
+	log_info("Shutting down API server\n");	
 	return 0;
 }

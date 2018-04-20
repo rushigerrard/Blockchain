@@ -32,6 +32,7 @@ public:
 	Block(string prevHash);		//this will set prevHash from BlockChiain
 	void getPrevHash();			//get prevHash from blockchain
 	void setPrevHash(string hash);	//set prevHash from tailNode of BlockChain
+	string toString();
 	string getMyHash();
 	vector<Tx> getTxList();
 	template<class Archive>
