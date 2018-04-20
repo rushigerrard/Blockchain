@@ -19,17 +19,17 @@ Tx::Tx(string sender, string receiver,int amount){
 	this->sender = sender;
 	this->receiver = receiver;
 	this->amount= amount;
-	this->leftoverAmt =-1;
+	this->change = 0;
 }
 
-Tx::Tx(string sender, string receiver,vector<string> inputs, int amount){
+Tx::Tx(string sender, string receiver,vector<string> inputs, int amount, int change){
 	const long double sysTime = time(0);
 	this->TxId = sender + receiver + to_string(sysTime);
 	this->sender = sender;
 	this->receiver = receiver;
 	this->inputTx = inputs;
 	this->amount = amount;
-	this->leftoverAmt = -1;
+	this->change = change;
 }
 
 string Tx::getSender(){
@@ -42,6 +42,9 @@ int Tx::getAmount(){
 	return this->amount;
 }
 
+int Tx::getChange(){
+	return this->change;
+}
 string Tx::getId(){
 	return this->TxId;
 }
