@@ -18,7 +18,7 @@
 #include <functional>
 #include <set>
 #include "utils.h"
-
+#include "logger.h"
 using namespace std;
 using namespace Pistache;
 using namespace Pistache::Http;
@@ -34,7 +34,6 @@ extern set<string> candidate_ip_set;
 extern set<string> broadcast_ip_set;
 
 int broadcast_client(string serialized_message, string endpoint){
-        cout<<"Ping candidate node : "<<candidate_ip<<endl;
 
         Http::Client client;
 
@@ -51,33 +50,31 @@ int broadcast_client(string serialized_message, string endpoint){
 
         int retry = 1;
         string port_no = "9080";
-	std::set<string>::iterator it;
-		for( it = broadcast_ip_set.begin(); it != broadcast_ip_set.end(); it++){
-			string candidate_ip = *it;
-			string page = "http://" + candidate_ip + ":" + port_no + endpoint;
+        std::set<string>::iterator it;
+                for( it = broadcast_ip_set.begin(); it != broadcast_ip_set.end(); it++){
+                        string candidate_ip = *it;
+                        string page = "http://" + candidate_ip + ":" + port_no + endpoint;
 
-			cout<<"Trying the API : "<<page<<endl;
+                        log_info("Broadcasting " + endpoint + " to " + candidate_ip);
+                        for(int i = 0; i < retry; i++){
+                                        auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(serialized_message).send();
+                        resp.then([&](Http::Response response) {
+                                        ++completedRequests;
 
-			for(int i = 0; i < retry; i++){
-					auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(serialized_message).send();
-			resp.then([&](Http::Response response) {
-					++completedRequests;
 
-				std::cout << "Response code = " << response.code() << std::endl;
-				auto body = response.body();
-				if (!body.empty()){
-					std::cout << "Response body = " << body << std::endl;
-				}
-					success = true;
+                                auto body = response.body();
+                                if (body.empty()){
+                                        log_info("Broadcast failed");
+                                        log_error("Broadcast failed");
+                                }
+                                        success = true;
 
-			}, Async::IgnoreException);
-			responses.push_back(std::move(resp));
-			}
-			cout<< "Responses size is as follows : "<<responses.size()<<endl;
-			sleep(2);
-			auto sync = Async::whenAll(responses.begin(), responses.end());
-			Async::Barrier<std::vector<Http::Response>> barrier(sync);
-		}
+                        }, Async::IgnoreException);
+                        responses.push_back(std::move(resp));
+                        }
+                        auto sync = Async::whenAll(responses.begin(), responses.end());
+                        Async::Barrier<std::vector<Http::Response>> barrier(sync);
+                }
         client.shutdown();
         if(success == true)
                 return 0;

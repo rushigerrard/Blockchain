@@ -1,4 +1,5 @@
 //#include "global.h"
+#include "logger.h"
 #include "message.h"
 #include "utils.h"
 #include <cstring>
@@ -48,6 +49,7 @@ string generate_message_id(){
 }
 
 string create_broadcast_message(string transactionMessage){
+	log_info("Initiaited broadcast workflow for current transaction...");
 	string message_id = generate_message_id();
 	string message_body = transactionMessage;
 	Message m(message_id, message_body);
@@ -55,11 +57,13 @@ string create_broadcast_message(string transactionMessage){
 }
 
 int broadcast_transaction_message(string broadcast_message){
+	log_info("Broadcasting transactions");
 	broadcast_client(broadcast_message, "/broadcast_tx");
 	return 0;
 }
 
 int broadcast_solved_block_message(string broadcast_message){
+	log_info("Broadcasting the solved block");
 	broadcast_client(broadcast_message, "/solved_block");
 	return 0;
 }
@@ -76,10 +80,12 @@ bool message_previously_read(string message){
 	
 	if(message_set.find(message_id) == message_set.end()){
 		//seeing the message for the first time
+		log_info("New broadcast message received.");
 		message_set.insert(message_id);
 		
 		//inform that message was not seen before
 		return false;
 	}
+	log_info("Broadcast was seen earlier. Dropping the current request.");
 	return true;	
 }

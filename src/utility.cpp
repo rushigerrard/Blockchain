@@ -159,20 +159,20 @@ void log_debug(std::string message) {
 
 std::set<std::string> read_broadcast_list(){
 
-        cout<<"Broadcast list"<<endl;
+        log_info("Reading broadcast list");
         return read_file("./resources/broadcast_list");
 
 }
 
 std::set<std::string> read_candidate_list(){
-        cout<<"Candidate list"<<endl;
+        log_info("Reading candidate list");
         return read_file("./resources/candidate_list");
 }
 std::set<std::string> read_file(const char* file_name){
         std::ifstream in(file_name);
         std::set<std::string> set;
         if(!in) {
-                std::cout << "Cannot open input file.\n";
+				log_error(string(file_name) + " file not found");
                 return set;
         }
 
@@ -180,11 +180,9 @@ std::set<std::string> read_file(const char* file_name){
 
         while(in) {
                 in.getline(str, 255);  // delim defaults to '\n'
-                if(in) cout << str << endl;
                 set.insert(str);
         }
         in.close();
-
         return set;
 }
 
@@ -202,13 +200,13 @@ void write_file(string file_name, set<string> ip_set){
 
 
 void write_broadcast_list(set<string> list){
-        cout<<"Write broadcast list"<<endl;
+        log_info("Writing broadcast list");
         return write_file("./resources/broadcast_list", list);
 
 }
 
 void write_candidate_list(set<string> list){
-        cout<<"Write candidate list"<<endl;
+        log_info("Writing candidate list");
         return write_file("./resources/candidate_list", list);
 }
 
@@ -295,4 +293,3 @@ std::string toString(Message msg){
         oa << msg;
         return oss.str();
 }
-

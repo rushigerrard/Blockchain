@@ -1,7 +1,9 @@
 //filename: tx.cpp
+#include "logger.h"
 #include "tx.h"
 #include "block.h"
 #include "blockchain.h"
+#include "utils.h"
 #include <string>
 #include <cstring>
 #include <iostream>
@@ -67,10 +69,7 @@ bool Tx::compare_Tx(Tx t2){
 }
 
 string Tx::toString(){
-	//ostringstream ss;
-	//ss<<strm.rdbuf();
-	//return ss.str();
-	return (this->sender + "->" + this->receiver +"->" + to_string(this->amount) + "\n");
+	return (this->sender + "->" + this->receiver +"->" + to_string(this->amount));
 }
 bool verify_tx(Tx tx) {
 		vector<string> inputs = tx.getInputs();

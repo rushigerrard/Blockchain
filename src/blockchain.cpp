@@ -1,16 +1,22 @@
+#include "block.h"
 #include "blockchain.h"
 #include <vector>
 #include<iostream>
 #include <set>
 #include "block.h"
 #include "tx.h"
+#include "utils.h"
+#include "logger.h"
 using namespace std;
 
 
 bool BlockChain::verifySoFARBC(vector<Block> bchain){
+	log_info("Veriying blockchain");
 	for(unsigned int i=0;i<bchain.size();i++){
-		if(VerifyBlock(bchain[i])==false)
+		if(VerifyBlock(bchain[i])==false){
+			log_info("Verifying blockchain failed");
 			return false;
+		}
 	}
 	return true;
 }
@@ -27,6 +33,7 @@ string BlockChain::lastHash(){
     }
 
 int BlockChain::addBlock_Last(Block b){
+	log_info("New block added to the blockchain");
 	blkchain.push_back(b);
 	return blkchain.size()-1;
 }
@@ -37,6 +44,7 @@ vector<Block> BlockChain::getBlockChain() {
 //constructor
 BlockChain::BlockChain(){
 	//creating genesis block with default transactions
+	//log_info("Creating genesis block for blockchain");
 	std::set<std::string> base = {"A", "B", "C", "D"};
 	std::set<std::string>::iterator it;
 	Block bl;
