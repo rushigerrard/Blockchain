@@ -32,6 +32,62 @@
 using namespace std;
 
 Logger *log1;
+
+
+//global variables for verifying tx
+extern BlockChain bc;
+extern vector<Tx> txlist;
+extern vector<Tx> txlist_uv;
+//function to verify transaction
+bool verify_tx(Tx tx) {
+	//get the input transactions
+	//check if the input transactions are valid
+	//check if the input transaction are not used as inputs anywhere else
+	//check if the amount and change add upto the posted value
+	vector<string> inputs = tx.getInputs();
+	unsigned int check1 = 0;
+	int check2 = 0;
+	int total = 0;
+	vector<Block> blkchain = bc.getBlockChain();
+	for(unsigned int i = 0; i < blkchain.size(); i++) {
+		Block blk = blkchain[i];
+		vector<Tx> tx_list = blk.getTxList();
+		for(unsigned int j = 0; j < tx_list.size(); i++) {
+			vector<string> inputs1 = tx_list[j].getInputs();
+			//check1 = check if the input transactions are present
+			for(unsigned int k = 0; k < inputs.size(); k++) {
+				if(inputs[k].compare(tx_list[j].getId()) == 0) {
+					if(tx_list.at(j).getSender().compare(inputs[k])){
+						total += tx_list.at(j).getChange();
+					}else if(tx_list.at(j).getReceiver().compare(inputs[k])){
+						total += tx_list.at(j).getAmount();
+					} else {
+						std::cout << "verification error" << std::endl;
+					}
+					check1++;
+				}
+				//check2 = check if the input transaction is not input of other transactions
+				for(unsigned int l = 0; l < inputs1.size(); i++) {
+					if(!inputs[k].compare(inputs1[l]) == 0) {
+						check2++;
+					}
+				}
+			}
+		}
+	}
+	if(total == tx.getAmount() + tx.getChange()){
+	} else {
+		std::cout << "amount + change is not matching" << std::endl;
+		return false;
+	}
+	if((check1 == inputs.size()) & (check2 == 0)) {
+		return true;
+	} else {
+		std::cout << "input either doesn't exist or has been used already" << std::endl;
+		return false;
+	}
+}
+
 std::string sha256(std::string s)
 {
     char outputBuffer[65];

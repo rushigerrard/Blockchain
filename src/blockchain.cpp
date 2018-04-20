@@ -42,7 +42,7 @@ BlockChain::BlockChain(){
 	Block bl;
 	for(it = base.begin(); it != base.end(); it++){
 		std::vector<std::string> inputs = {"_default_"};
-		Tx tx("ADMIN", *it, inputs, 100);
+		Tx tx("ADMIN", *it, inputs, 100, 0);
 		bl.addTx(tx);
 	}
 	Block blk(10);	//create genesis Block with default values

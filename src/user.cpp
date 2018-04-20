@@ -53,7 +53,7 @@ std::vector<Tx> getValidTx(string user){
 		vector<Tx> tx_list = blk_vec.at(i).getTxList();
 		for(unsigned int j = 0; j < tx_list.size(); j++){
 			Tx tx = tx_list.at(i);
-			if(tx.getSender().compare(user) || tx.getReceiver().compare(user)){
+			if(tx.getSender().compare(user) == 0 || tx.getReceiver().compare(user) == 0){
 				ret_list.push_back(tx);
 			}
 		}	
@@ -68,7 +68,7 @@ std::vector<Tx> getValidTx(string user){
 			std::vector<Tx>::iterator iter;
 			for(unsigned int k = 0; k < inputs.size(); k++){
 				for (iter = ret_list.begin(); iter != ret_list.end(); ) {
-					if(iter->getId().compare(inputs.at(k))){
+					if(iter->getId().compare(inputs.at(k)) == 0){
 						iter = ret_list.erase(iter);
 					}else{
 						iter++;
@@ -85,9 +85,9 @@ std::vector<Tx> getValidTx(string user){
 int getTotal(string user, std::vector<Tx> tx_list){
 	int total = 0;
 	for(unsigned int i = 0; i < tx_list.size(); i++){
-		if(tx_list.at(i).getSender().compare(user)){
+		if(tx_list.at(i).getSender().compare(user) == 0){
 			total += tx_list.at(i).getChange();
-		}else if(tx_list.at(i).getReceiver().compare(user)){
+		}else if(tx_list.at(i).getReceiver().compare(user) == 0){
 			total += tx_list.at(i).getAmount();
 		}		
 	}

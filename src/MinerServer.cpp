@@ -38,6 +38,7 @@ extern vector<string> candidate_ip_set;
 //global variables for business logic
 extern BlockChain bc;
 extern vector<Tx> txlist;
+extern vector<Tx> txlist_uv;
 
 bool verify_tx(Tx );
 string create_broadcast_message(string );
@@ -88,13 +89,14 @@ class MyHandler : public Http::Handler {
 				}
 			} else if (req.resource() == "/tx"){
 				if(req.method() == Http::Method::Get){
-					response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
+					response.send(Http::Code::Ok, "Use POST method to post TX" , MIME(Text, Plain));
 				} else{
 					string reqString = req.body();
 					auto query = req.query();
 					Tx tx = toTx(reqString);
-					response.send(Http::Code::Ok, "Transaction received", MIME(Text, Plain));
-					log_info("Transaction received from user\n");		
+					response.send(Http::Code::Ok, "Transaction received from a user", MIME(Text, Plain));
+					log_info("Transaction received from a user\n");
+					txlist_uv.push_back(tx);		
 					if(verify_tx(tx)) {
 						log_info("Transaction successfully verified\nAdding it to a new block\n");
 						txlist.push_back(tx);
@@ -106,10 +108,10 @@ class MyHandler : public Http::Handler {
 			}else if (req.resource() == "/broadcast_tx"){
 				if(req.method() == Http::Method::Get){
 					
-					response.send(Http::Code::Ok, "Transaction Received", MIME(Text, Plain));
+					response.send(Http::Code::Ok, "Use POST method to post TX", MIME(Text, Plain));
 				} else{
 					string message = req.body();
-					cout<<"Received transaction from a node"<<endl;
+					cout<<"Transaction received from a node"<<endl;
 					response.send(Http::Code::Ok, "Transaction received", MIME(Text, Plain));
 					
 					if(message_previously_read(message)){
