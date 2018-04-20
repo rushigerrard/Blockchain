@@ -18,6 +18,7 @@
 #define NANOSECONDS_IN_A_SECOND 1000000000
 #define MICROSECONDS_IN_A_NANOSECOND 1000
 #define MATCHING_ZEROS 5
+#define MINER_SLEEP 60	//sleep miner for this time
 
 //function to verify transactions
 bool verify_tx(Tx);

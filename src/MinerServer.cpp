@@ -41,6 +41,7 @@ extern vector<Tx> txlist;
 extern vector<Tx> txlist_uv;
 
 bool verify_tx(Tx );
+void verify_received_block(Block b1);
 string create_broadcast_message(string );
 int broadcast_transaction_message(string );
 int broadcast_solved_block_message(string );
@@ -145,6 +146,16 @@ class MyHandler : public Http::Handler {
             	log_info("Received new solved block");
 				if(req.method() == Http::Method::Post){
 					string message = req.body();
+                    //convert this string message to a block object
+
+                    //call a function to verify the block with anyongoing execution of Mining, and stop
+                    //on sucessfull verification, if there is no ongoing execution then compare the result with
+                    // store tx, if there is no tx to match then compare its prev hash with bc Head Hash,
+                    //if that also not match then simply ignore the block.
+                    Block b1 = toBlock(message);
+                    log_debug("print the received block");
+                    b1.printBlock();
+                    verify_received_block(b1);
 					response.send(Http::Code::Ok, "Block received", MIME(Text, Plain));	
 				} else{
                 	response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));

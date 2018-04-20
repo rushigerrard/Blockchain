@@ -21,6 +21,8 @@
 #include "utils.h"
 #include "global.h"
 #include "logger.h"
+#include "tx.h"
+
 
 using namespace std;
 using namespace Pistache;
@@ -33,11 +35,102 @@ extern string candidate_ip;
 extern set<string> candidate_ip_set;
 extern set<string>  broadcast_ip_set;
 
+//These variables are global and should be thread safe
 extern BlockChain bc;
 extern vector<Tx> txlist;
+extern vector<Tx> txlist_uv; //pool of unverified Tx
+/*Make this variable also thread safe*/
+extern std::atomic<bool> stop_block_creation;//set by th2 to stop pow
+extern std::atomic<bool> always_run_th; //this is
+extern std::atomic<bool> pow_state; //thread 1 is running
+extern std::mutex bcMutex;
+extern std::mutex tx_listMutex;
 
 void stabilization_workflow();
 void api_service();
+
+//This function to verify the block with anyongoing execution of Mining, and stop
+//on sucessfull verification, if there is no ongoing execution then compare the result with
+// store tx, if there is no tx to match then compare its prev hash with bc Head Hash,
+//if that also not match then simply ignore the block.
+void verify_received_block(Block b1){
+    //if no ongoing transaction is running and try to match the previous hash of this with new
+    bcMutex.lock();
+    string last_hash = bc.lastHash();
+    bcMutex.unlock();
+    if((b1.VerifyBlock(b1)==false) || (last_hash.compare(b1.getPrevHash()) != 0)){
+        //TODO can request for blockchain also here
+        return;
+    }
+    if(!pow_state){
+        //pow is not running, compare the result with (verified one) stored tx and received block tx
+        //if there are some tx which are part of this block then remove them from list and add the block chain
+        //compare with verified Tx
+        tx_listMutex.lock();
+        vector<Tx> blkTxList =b1.getTxList();
+        for(unsigned int i=0;i<blkTxList.size();i++){
+            for(unsigned int j=0;j<txlist.size();j++){
+                if(blkTxList[i].compare_Tx(txlist[j])){
+                    //equal remove from tx_list
+                    txlist.erase(txlist.begin()+i);
+                    blkTxList.erase(blkTxList.begin()+j);
+                    i--;
+                    j--;
+                }
+            }
+        }
+         tx_listMutex.unlock();
+        //removing the tx from unverified pool
+        for(unsigned int i=0;i<blkTxList.size();i++){
+            for(unsigned int j=0;j<txlist_uv.size();j++){
+                if(blkTxList[i].compare_Tx(txlist_uv[j])){
+                    //equal remove from tx_list
+                    txlist_uv.erase(txlist_uv.begin()+i);
+                    blkTxList.erase(blkTxList.begin()+j);
+                    i--;
+                    j--;
+                }
+            }
+        }
+        //now set the proper flag for run
+        bcMutex.lock();
+        bc.addBlock_Last(b1);
+        bcMutex.unlock();
+    } else {
+        //compare the running txlist with recvd block tx list if there are some tx are same then stop current exection and
+        //start a new block creation with new Tx
+        tx_listMutex.lock();
+        vector<Tx> blkTxList =b1.getTxList();
+        for(unsigned int i=0;i<blkTxList.size();i++){
+            for(unsigned int j=0;j<txlist.size();j++){
+                if(blkTxList[i].compare_Tx(txlist[j])){
+                    //equal remove from tx_list
+                    txlist.erase(txlist.begin()+i);
+                    blkTxList.erase(blkTxList.begin()+j);
+                    i--;
+                    j--;
+                }
+            }
+        }
+         tx_listMutex.unlock();
+        //removing the tx from unverified pool
+        for(unsigned int i=0;i<blkTxList.size();i++){
+            for(unsigned int j=0;j<txlist_uv.size();j++){
+                if(blkTxList[i].compare_Tx(txlist_uv[j])){
+                    //equal remove from tx_list
+                    txlist_uv.erase(txlist_uv.begin()+i);
+                    blkTxList.erase(blkTxList.begin()+j);
+                    i--;
+                    j--;
+                }
+            }
+        }
+        //set the proper flag to stop the execution of thread 1
+
+    }
+}
+
+
 
 
 void parse_shared_broadcast_list(string broadcast_list){
@@ -249,6 +342,64 @@ void initialize(int argc, char *argv[]){
 }
 
 
+void check_run_pow(){
+	unsigned int i=0;
+    while (always_run_th){
+        //locking on tx and  have to check, can we make bc and tx_list atomic and it may solve the problem
+        if(txlist.size()!=0 && !(pow_state)){
+            tx_listMutex.lock();
+            //set the proof of work as running
+            pow_state = true;
+            //copy the txlist to your local variable and then create a block and start mining it
+            Block b1;
+            //lock the block chain and get the previous hash
+            bcMutex.lock();
+            b1.setPrevHash(bc.lastHash());
+            for(i=0;i<txlist.size();i++){
+                b1.addTx(txlist[i]);
+            }
+            //clear the txlist
+            txlist.clear();
+            //release the lock of block chain and txlist and continue with block generation
+            bcMutex.unlock();
+            tx_listMutex.unlock();
+            if(i==0){
+                pow_state = false;
+                continue;
+            }
+            b1.generateHash();
+            //check for the flag about after generating block did you receive the same block from some on else
+            //this stop_block_creation flag will be check in nounce login also
+            //lock the blockchain again, we freed the lock of bc before because pow takes time,
+            //don't want to hold lock for so long
+            //lock bc
+            bcMutex.lock();
+            if(!stop_block_creation && (bc.lastHash().compare(b1.getPrevHash())==0)){
+                bc.addBlock_Last(b1);
+                //TODO call a method to broadcast the block to other node as well
+            }
+            //unlock the block chain
+            bcMutex.unlock();
+        } else {
+            //you have to sleep for 30 seconds to get enough block in the shared txlist variable
+            log_debug("Miner is sleeping,before running again");
+            this_thread::sleep_for(chrono::seconds(MINER_SLEEP));
+        }
+    }
+}//End of function
+
+
+
+void monitor_stop_pow(){
+    //keep on running this thread also
+    //you receive a block from peer node, and that block is valid and contain the
+    //same amount of Tx or less than the current minned Node then stop ongoing mining thread.
+    while(always_run_th){
+        if(pow_state == true){
+		}
+    }
+}
+
 int main(int argc, char *argv[]){
 	if(argc >= 5){
     	printUsage();
@@ -266,7 +417,16 @@ int main(int argc, char *argv[]){
         
 	//step 3
     bool is_candidate_ip = false;
-        
+    /*Create two thread for starting the POW,
+        where one thread is responsible of doing POW and other is to monitor the received block
+        from other Node, as you receive the block from other node, set a global atomic variable to true,
+        which leads to stop the proof of work in other thread and exit.
+        Otherwise, first thread will continue its task until it finish and add this block to its blockchain
+        and later publish it to the network*/
+    std::thread powThread(check_run_pow);
+    //second thread to set flag to stop the execution of the previous thread by setting the flag
+    std::thread monitorThread(monitor_stop_pow);
+   
 	
 	std::set<string>::iterator it;
 	for (it = candidate_ip_set.begin(); it != candidate_ip_set.end(); it++) {
@@ -287,7 +447,8 @@ int main(int argc, char *argv[]){
 		log_info("Node is a candidate node");
 		api_service();
 	}
-        return 0;
+	powThread.join();
+    return 0;
 }
 
 /*

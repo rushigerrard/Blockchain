@@ -86,7 +86,7 @@ int getTotal(string user, std::vector<Tx> tx_list){
 	int total = 0;
 	for(unsigned int i = 0; i < tx_list.size(); i++){
 		if(tx_list.at(i).getSender().compare(user) == 0){
-			total += tx_list.at(i).getChange();
+			total += tx_list.at(i).getLeftoverAmt();
 		}else if(tx_list.at(i).getReceiver().compare(user) == 0){
 			total += tx_list.at(i).getAmount();
 		}		

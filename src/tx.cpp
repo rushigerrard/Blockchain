@@ -10,9 +10,6 @@
 #include <sstream>
 using namespace std;
 
-extern BlockChain bc;
-extern vector<Tx> txlist;
-
 Tx::Tx(){
 }
 Tx::Tx(string sender, string receiver,int amount){
@@ -24,14 +21,14 @@ Tx::Tx(string sender, string receiver,int amount){
 	this->leftoverAmt =-1;
 }
 
-Tx::Tx(string sender, string receiver,vector<string> inputs, int amount){
+Tx::Tx(string sender, string receiver,vector<string> inputs, int amount,int leftoverAmount){
 	const long double sysTime = time(0);
 	this->TxId = sender + receiver + to_string(sysTime);
 	this->sender = sender;
 	this->receiver = receiver;
 	this->inputTx = inputs;
 	this->amount = amount;
-	this->leftoverAmt = -1;
+	this->leftoverAmt = leftoverAmount;
 }
 
 string Tx::getSender(){
@@ -71,33 +68,4 @@ bool Tx::compare_Tx(Tx t2){
 string Tx::toString(){
 	return (this->sender + "->" + this->receiver +"->" + to_string(this->amount));
 }
-bool verify_tx(Tx tx) {
-		vector<string> inputs = tx.getInputs();
-		unsigned int check1 = 0;
-		int check2 = 0;
-		vector<Block> blkchain = bc.getBlockChain();
-		for(unsigned int i = 0; i < blkchain.size(); i++) {
-			Block blk = blkchain[i];
-			vector<Tx> tx_list = blk.getTxList();
-			for(unsigned int j = 0; j < tx_list.size(); i++) {
-				vector<string> inputs1 = tx_list[j].getInputs();
-				//check1 = check if the input transactions are present
-				for(unsigned int k = 0; k < inputs.size(); k++) {
-					if(!inputs[k].compare(tx_list[j].getId())) {
-						check1++;
-					}
-					//check2 = check if the input transaction is not input of other transactions
-					for(unsigned int l = 0; l < inputs1.size(); i++) {
-						if(!inputs[k].compare(inputs1[l])) {
-							check2++;
-						}
-					}
-				}
-			}
-		}
-		if((check1 == inputs.size()) & (check2 == 0)) {
-			return true;
-		} else {
-			return false;
-		}
-}
+

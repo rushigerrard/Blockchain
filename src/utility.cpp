@@ -58,7 +58,7 @@ bool verify_tx(Tx tx) {
 			for(unsigned int k = 0; k < inputs.size(); k++) {
 				if(inputs[k].compare(tx_list[j].getId()) == 0) {
 					if(tx_list.at(j).getSender().compare(inputs[k])){
-						total += tx_list.at(j).getChange();
+						total += tx_list.at(j).getLeftoverAmt();
 					}else if(tx_list.at(j).getReceiver().compare(inputs[k])){
 						total += tx_list.at(j).getAmount();
 					} else {
@@ -75,7 +75,7 @@ bool verify_tx(Tx tx) {
 			}
 		}
 	}
-	if(total == tx.getAmount() + tx.getChange()){
+	if(total == tx.getAmount() + tx.getLeftoverAmt()){
 	} else {
 		std::cout << "amount + change is not matching" << std::endl;
 		return false;

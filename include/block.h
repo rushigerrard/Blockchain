@@ -30,7 +30,7 @@ public:
 	Block(int u);				//to create a genessis block
 	Block();					//To create a Normal Block but we have to use set prevhash method after this
 	Block(string prevHash);		//this will set prevHash from BlockChiain
-	void getPrevHash();			//get prevHash from blockchain
+	string getPrevHash();			//get prevHash from blockchain
 	void setPrevHash(string hash);	//set prevHash from tailNode of BlockChain
 	string toString();
 	string getMyHash();
