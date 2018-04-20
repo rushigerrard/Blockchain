@@ -26,4 +26,5 @@ set<string> broadcast_ip_set;
 set<string> message_set;
 BlockChain bc;
 vector<Tx> txlist;
+vector<Tx> txlist_uv;
 #endif

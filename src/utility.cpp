@@ -32,6 +32,62 @@
 using namespace std;
 
 Logger *log1;
+
+
+//global variables for verifying tx
+extern BlockChain bc;
+extern vector<Tx> txlist;
+extern vector<Tx> txlist_uv;
+//function to verify transaction
+bool verify_tx(Tx tx) {
+	//get the input transactions
+	//check if the input transactions are valid
+	//check if the input transaction are not used as inputs anywhere else
+	//check if the amount and change add upto the posted value
+	vector<string> inputs = tx.getInputs();
+	unsigned int check1 = 0;
+	int check2 = 0;
+	int total = 0;
+	vector<Block> blkchain = bc.getBlockChain();
+	for(unsigned int i = 0; i < blkchain.size(); i++) {
+		Block blk = blkchain[i];
+		vector<Tx> tx_list = blk.getTxList();
+		for(unsigned int j = 0; j < tx_list.size(); i++) {
+			vector<string> inputs1 = tx_list[j].getInputs();
+			//check1 = check if the input transactions are present
+			for(unsigned int k = 0; k < inputs.size(); k++) {
+				if(inputs[k].compare(tx_list[j].getId()) == 0) {
+					if(tx_list.at(j).getSender().compare(inputs[k])){
+						total += tx_list.at(j).getChange();
+					}else if(tx_list.at(j).getReceiver().compare(inputs[k])){
+						total += tx_list.at(j).getAmount();
+					} else {
+						std::cout << "verification error" << std::endl;
+					}
+					check1++;
+				}
+				//check2 = check if the input transaction is not input of other transactions
+				for(unsigned int l = 0; l < inputs1.size(); i++) {
+					if(!inputs[k].compare(inputs1[l]) == 0) {
+						check2++;
+					}
+				}
+			}
+		}
+	}
+	if(total == tx.getAmount() + tx.getChange()){
+	} else {
+		std::cout << "amount + change is not matching" << std::endl;
+		return false;
+	}
+	if((check1 == inputs.size()) & (check2 == 0)) {
+		return true;
+	} else {
+		std::cout << "input either doesn't exist or has been used already" << std::endl;
+		return false;
+	}
+}
+
 std::string sha256(std::string s)
 {
     char outputBuffer[65];
@@ -103,20 +159,20 @@ void log_debug(std::string message) {
 
 std::set<std::string> read_broadcast_list(){
 
-        cout<<"Broadcast list"<<endl;
+        log_info("Reading broadcast list");
         return read_file("./resources/broadcast_list");
 
 }
 
 std::set<std::string> read_candidate_list(){
-        cout<<"Candidate list"<<endl;
+        log_info("Reading candidate list");
         return read_file("./resources/candidate_list");
 }
 std::set<std::string> read_file(const char* file_name){
         std::ifstream in(file_name);
         std::set<std::string> set;
         if(!in) {
-                std::cout << "Cannot open input file.\n";
+				log_error(string(file_name) + " file not found");
                 return set;
         }
 
@@ -124,11 +180,9 @@ std::set<std::string> read_file(const char* file_name){
 
         while(in) {
                 in.getline(str, 255);  // delim defaults to '\n'
-                if(in) cout << str << endl;
                 set.insert(str);
         }
         in.close();
-
         return set;
 }
 
@@ -146,13 +200,13 @@ void write_file(string file_name, set<string> ip_set){
 
 
 void write_broadcast_list(set<string> list){
-        cout<<"Write broadcast list"<<endl;
+        log_info("Writing broadcast list");
         return write_file("./resources/broadcast_list", list);
 
 }
 
 void write_candidate_list(set<string> list){
-        cout<<"Write candidate list"<<endl;
+        log_info("Writing candidate list");
         return write_file("./resources/candidate_list", list);
 }
 
@@ -239,4 +293,3 @@ std::string toString(Message msg){
         oa << msg;
         return oss.str();
 }
-

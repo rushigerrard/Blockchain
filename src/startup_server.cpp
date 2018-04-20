@@ -41,15 +41,15 @@ void api_service();
 
 
 void parse_shared_broadcast_list(string broadcast_list){
-        cout<<"Parsing shared broadcast list "<<broadcast_list<<endl;
+        
+		log_info("Parsing shared broadcast list");
         set<string> updated_broadcast_list = toStringSet(broadcast_list);
-	cout<<"size of updated_broadcast_list: "<< updated_broadcast_list.size();
-        cout<<"Writing updated entries to broadcast list"<<endl;
+	    log_info("Writing updated entries to broadcast list");
         write_broadcast_list(updated_broadcast_list);
 }
 
 int ping_candidate(){
-        cout<<"Ping candidate node : "<<candidate_ip<<endl;
+        log_info("Ping candidate node : " + candidate_ip);
 
         Http::Client client;
 
@@ -69,25 +69,23 @@ int ping_candidate(){
 
         string page = "http://" + candidate_ip + ":" + port_no + "/ping";
 
-        cout<<"Trying the API : "<<page<<endl;
 
         for(int i = 0; i < retry; i++){
                 auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(my_ip).send();
         resp.then([&](Http::Response response) {
                 ++completedRequests;
 
-            std::cout << "Response code = " << response.code() << std::endl;
+
             auto body = response.body();
             if (!body.empty()){
-                std::cout << "Response body = " << body << std::endl;
+				log_info("Ping successful");
             }
                 success = true;
 
         }, Async::IgnoreException);
         responses.push_back(std::move(resp));
         }
-        cout<< "Responses size is as follows : "<<responses.size()<<endl;
-        sleep(2);
+
         auto sync = Async::whenAll(responses.begin(), responses.end());
         Async::Barrier<std::vector<Http::Response>> barrier(sync);
 
@@ -110,7 +108,7 @@ int arrival_informed(string receiver_ip_address){
         client.init(opts);
 
         std::vector<Async::Promise<Http::Response>> responses;
-        cout<<"Connecting to candidate IP : "<<receiver_ip_address<<endl;
+        log_info("Connecting to candidate IP : " + receiver_ip_address);
         std::atomic<size_t> completedRequests(2);
         std::atomic<size_t> failedRequests(2);
 
@@ -119,18 +117,17 @@ int arrival_informed(string receiver_ip_address){
 
         string page = "http://" + receiver_ip_address + ":" + port_no + "/arrival";
 
-        cout<<"Trying the API : "<<page<<endl;
+        log_info("Trying the API : " + page);
         for(int i = 0; i < retry; i++){
         auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(my_ip).send();
         resp.then([&](Http::Response response) {
                 ++completedRequests;
-
-            std::cout << "Response code = " << response.code() << std::endl;
-            auto body = response.body();
-            if (!body.empty()){
-                std::cout << "Response body = " << body << std::endl;
-                parse_shared_broadcast_list(body);
-            }
+		auto body = response.body();
+	    
+		if (!body.empty()){
+			log_info("Response code : 200 SUCCESS  Response body : " + body);
+                	parse_shared_broadcast_list(body);
+            	}
                 success = true;
 
         }, Async::IgnoreException);
@@ -150,31 +147,31 @@ int arrival_informed(string receiver_ip_address){
 int timer_start(std::function<int(void)> func, unsigned int interval)
 {
         std::thread([func, interval]() {
-                std::cout<<"Pinging candidate node ever 1000 ms"<<std::endl;
+			log_info("Pinging candidate node ever 1000 ms");
         bool pingFlag = true;
         while (pingFlag == true)
         //while(true)
         {
             if(func() == 1){
                 pingFlag = false;
-                std::cout<<"Ping failed"<<std::endl;
+                log_error("Ping failed");
                 stabilization_workflow();
                 return 1;
             }else{
-                std::cout<<"Ping successfully"<<std::endl;
+                log_info("Ping successfully");
            }
             std::this_thread::sleep_for(std::chrono::milliseconds(interval));
         }
 	return 0;
     }).detach();
-        std::cout<<"Timer thread detached"<<std::endl;
+        log_info("Timer thread detached");
         return 0;
 }
 void other_thread(){
 		api_service();
 }
 void ping_service(){
-        std::cout<<"Ping server started"<<endl;
+        log_info("Ping server started");
         timer_start(ping_candidate, 1000);
         other_thread();
 
@@ -186,12 +183,11 @@ void node_arrival_call(){
 	candidate_ip = *it;
 
         while(arrival_informed(candidate_ip)){
-                cout<<"Trying a different node"<<endl;
-                sleep(2);
-
-		it = candidate_ip_set.begin();
-		advance(it,rand()%candidate_ip_set.size());
-		candidate_ip = *it;
+			log_info("Trying a different node");
+            sleep(2);
+			it = candidate_ip_set.begin();
+			advance(it,rand()%candidate_ip_set.size());
+			candidate_ip = *it;
         }
 }
 string get_own_ip(){
@@ -208,7 +204,7 @@ string get_own_ip(){
         return inet_ntoa(( (struct sockaddr_in *)&ifr.ifr_addr )->sin_addr);
 }
 void stabilization_workflow(){
-        cout<<"Starting stabilization process..."<<endl;
+        log_info("Starting stabilization process...");
         sleep(1);
         node_arrival_call();
         ping_service();
@@ -218,10 +214,11 @@ void printUsage(){
 }
 void printInitialization(){
 	
-	cout<< "Node IP address : "<< my_ip << endl;
-	cout<< "Server started on port : "<< port_no << endl;
-	cout<< "Cores = " << hardware_concurrency() << endl;
-	cout<< "Using " << thr << " threads" << endl;
+
+	log_info( "Node IP address : " + my_ip);
+	log_info( "Server started on port : " + to_string(port_no));
+	log_info( "Cores = " + to_string(hardware_concurrency()));
+	log_info( "Using " + to_string(thr) + " threads");
 }
 void initialize(int argc, char *argv[]){
 		if(argc > 1){
@@ -235,7 +232,6 @@ void initialize(int argc, char *argv[]){
 				}else{
 					thr = default_thread_count;
 				}
-				
 			}else{
 				port_no = default_port;
 				thr = default_thread_count;
@@ -254,18 +250,19 @@ void initialize(int argc, char *argv[]){
 
 
 int main(int argc, char *argv[]){
-	
 	if(argc >= 5){
     	printUsage();
         exit (EXIT_FAILURE);
     }
 
-	initialize(argc, argv);
 	/* Create a logger and fill out this file*/
     ofstream fl;
    	string logfile = "./logs/serverstartup__" + toStr(timer()) + ".log";
    	fl.open(logfile.c_str());
-    create_logger(fl, std::cout);		
+    create_logger(fl, std::cout);
+	
+	initialize(argc, argv);
+			
         
 	//step 3
     bool is_candidate_ip = false;
@@ -283,11 +280,11 @@ int main(int argc, char *argv[]){
     write_broadcast_list(broadcast_ip_set);
 
     if(!is_candidate_ip){
-		log_info("Node is not a candidate node\n");
-		log_info("Informing the cluster of its arrival\n");
+		log_info("Node is not a candidate node");
+		log_info("Informing the cluster of its arrival");
 		stabilization_workflow();
     }else{
-		log_info("Node is a candidate node\n");
+		log_info("Node is a candidate node");
 		api_service();
 	}
         return 0;
@@ -325,4 +322,5 @@ Step 4
 WHAT IF ALL CANDIDATE NODES GO DOWN?
 
 */
+
 

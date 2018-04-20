@@ -10,12 +10,13 @@ OBJECTS=$(SOURCES:.cpp=.o)
 MINER_MAIN=./src/main.cpp
 START_MAIN = ./src/startup_server.cpp
 READER_WRITER_FILE= ./src/MinerServer.cpp
+USER_MAIN = ./src/user.cpp
 
 MINER_EXECUTABLE=./miner
 SERVER_START_EXE=./serverstartup
 
-MINER_OBJECTS=$(filter-out $(START_MAIN:.cpp=.o) $(READER_WRITER_FILE:.cpp=.o), $(OBJECTS))
-SERVER_START_OBJECTS=$(filter-out $(MINER_MAIN:.cpp=.o), $(OBJECTS))
+MINER_OBJECTS=$(filter-out $(START_MAIN:.cpp=.o) $(READER_WRITER_FILE:.cpp=.o) $(USER_MAIN:.cpp=.o), $(OBJECTS))
+SERVER_START_OBJECTS=$(filter-out $(MINER_MAIN:.cpp=.o) $(USER_MAIN:.cpp=.o), $(OBJECTS))
 
 .PHONY: all bin clean
 

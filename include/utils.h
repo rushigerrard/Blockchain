@@ -19,6 +19,9 @@
 #define MICROSECONDS_IN_A_NANOSECOND 1000
 #define MATCHING_ZEROS 5
 
+//function to verify transactions
+bool verify_tx(Tx);
+
 //function to calculate Sha256
 std::string sha256(std::string s);
 
