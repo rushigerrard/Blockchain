@@ -98,3 +98,7 @@ void Block::addTx(Tx t1){
 	this->tx_list.push_back(t1);
 	//cout<<"Tx added, Number of transaction "<<this->tx_list.size()<<"\n";
 }
+
+string Block::getPrevHash(){
+    return prevHash;
+}

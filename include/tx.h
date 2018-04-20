@@ -13,19 +13,17 @@ using namespace std;
 
 class Tx{
 public:
-	//constructors
 	Tx(string sender,string receiver,int amount);
 	Tx();
-	Tx(string sender, string receiver, vector<string> inputTx, int amount, int change);
-	//getters
+	Tx(string sender, string receiver, vector<string> inputTx, int amount);
 	string getId();
 	string getSender();
 	string getReceiver();
-	vector<string> getInputs();
 	int getAmount();
-	int getChange();
-
 	string toString();
+	vector<string> getInputs();
+	int getLeftoverAmt();
+	bool compare_Tx(Tx t2);
 	friend ostream& operator<<(ostream &strm, const Tx &tx);
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -35,7 +33,7 @@ public:
 		ar & receiver;
 		ar & inputTx;
 		ar & amount;
-		ar & change;
+		ar & leftoverAmt;
 	}
 private:
 	string TxId;
@@ -43,7 +41,7 @@ private:
 	string receiver;
 	vector<string> inputTx;
 	int amount;
-	int change;
+	int leftoverAmt;
 };
 #endif
 
