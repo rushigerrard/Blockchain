@@ -53,6 +53,11 @@ BlockChain::BlockChain(){
 		Tx tx("ADMIN", *it, inputs, 100, 0);
 		bl.addTx(tx);
 	}
-	Block blk(10);	//create genesis Block with default values
-	blkchain.push_back(blk);
+	//Block blk(10);	//create genesis Block with default values
+	blkchain.push_back(bl);
+}
+
+//copy Constructor
+BlockChain::BlockChain(const BlockChain &bc){
+	blkchain = bc.blkchain;
 }

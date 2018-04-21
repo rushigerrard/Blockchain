@@ -171,9 +171,9 @@ int ping_candidate(){
 
             auto body = response.body();
             if (!body.empty()){
-				log_info("Ping successful");
+		log_info("Pinged successful");
+		success = true;
             }
-                success = true;
 
         }, Async::IgnoreException);
         responses.push_back(std::move(resp));
@@ -181,6 +181,8 @@ int ping_candidate(){
 
         auto sync = Async::whenAll(responses.begin(), responses.end());
         Async::Barrier<std::vector<Http::Response>> barrier(sync);
+	//V IMPORTANT - don't remove sleep(2)
+	sleep(2);
 
         client.shutdown();
         if(success == true)
@@ -218,7 +220,6 @@ int arrival_informed(string receiver_ip_address){
 		auto body = response.body();
 	    
 		if (!body.empty()){
-			log_info("Response code : 200 SUCCESS  Response body : " + body);
                 	parse_shared_broadcast_list(body);
             	}
                 success = true;
@@ -226,6 +227,8 @@ int arrival_informed(string receiver_ip_address){
         }, Async::IgnoreException);
         responses.push_back(std::move(resp));
         }
+
+	//DON'T remove the sleep line. It is to receive and validate a successful response
         sleep(2);
         auto sync = Async::whenAll(responses.begin(), responses.end());
         Async::Barrier<std::vector<Http::Response>> barrier(sync);
@@ -240,7 +243,7 @@ int arrival_informed(string receiver_ip_address){
 int timer_start(std::function<int(void)> func, unsigned int interval)
 {
         std::thread([func, interval]() {
-			log_info("Pinging candidate node ever 1000 ms");
+			log_info("Pinging candidate node ever 5000 ms");
         bool pingFlag = true;
         while (pingFlag == true)
         //while(true)
@@ -251,7 +254,6 @@ int timer_start(std::function<int(void)> func, unsigned int interval)
                 stabilization_workflow();
                 return 1;
             }else{
-                log_info("Ping successfully");
            }
             std::this_thread::sleep_for(std::chrono::milliseconds(interval));
         }
@@ -261,11 +263,16 @@ int timer_start(std::function<int(void)> func, unsigned int interval)
         return 0;
 }
 void other_thread(){
+	if(!api_service_running){	
 		api_service();
+		api_service_running = true;
+	}else{
+		api_service_running = false;
+	}
 }
 void ping_service(){
         log_info("Ping server started");
-        timer_start(ping_candidate, 1000);
+        timer_start(ping_candidate, 5000);
         other_thread();
 
 }
@@ -298,7 +305,7 @@ string get_own_ip(){
 }
 void stabilization_workflow(){
         log_info("Starting stabilization process...");
-        sleep(1);
+        sleep(5);
         node_arrival_call();
         ping_service();
 }
