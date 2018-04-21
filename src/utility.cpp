@@ -44,6 +44,7 @@ bool verify_tx(Tx tx) {
 	//check if the input transactions are valid
 	//check if the input transaction are not used as inputs anywhere else
 	//check if the amount and change add upto the posted value
+	log_info("Verifying transaction : " + tx.toString());
 	vector<string> inputs = tx.getInputs();
 	unsigned int check1 = 0;
 	int check2 = 0;
@@ -62,7 +63,7 @@ bool verify_tx(Tx tx) {
 					}else if(tx_list.at(j).getReceiver().compare(inputs[k])){
 						total += tx_list.at(j).getAmount();
 					} else {
-						std::cout << "verification error" << std::endl;
+						log_info("Verification failed");
 					}
 					check1++;
 				}
@@ -77,13 +78,13 @@ bool verify_tx(Tx tx) {
 	}
 	if(total == tx.getAmount() + tx.getLeftoverAmt()){
 	} else {
-		std::cout << "amount + change is not matching" << std::endl;
+		log_info("Amount + change is not matching");
 		return false;
 	}
 	if((check1 == inputs.size()) & (check2 == 0)) {
 		return true;
 	} else {
-		std::cout << "input either doesn't exist or has been used already" << std::endl;
+		log_info("Input either doesn't exist or has been used already");
 		return false;
 	}
 }
@@ -144,17 +145,15 @@ void create_logger(std::ostream& out1, std::ostream& out2) {
 }
 
 void log_info(std::string message) {
-    // std::cout << "[ INFO ] " << message << std::endl;
     *log1 << "[ INFO ] " << getCurrentTime() <<" : "<< message << std::endl;
 }
 
 void log_error(std::string message) {
-    *log1 << " [ ERROR ] " << getCurrentTime() <<" : "<< message << std::endl;
+    *log1 << "[ ERROR ] " << getCurrentTime() <<" : "<< message << std::endl;
 }
 
 void log_debug(std::string message) {
-    // std::cout << "[ DEBUG ] " << message << std::endl;
-    *log1 << " [ DEBUG ] " << getCurrentTime() <<" : "<< message << std::endl;
+    *log1 << "[ DEBUG ] " << getCurrentTime() <<" : "<< message << std::endl;
 }
 
 std::set<std::string> read_broadcast_list(){
