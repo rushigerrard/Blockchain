@@ -52,7 +52,7 @@ std::vector<Tx> getValidTx(string user){
 	for(unsigned int i = 0; i < blk_vec.size(); i++){
 		vector<Tx> tx_list = blk_vec.at(i).getTxList();
 		for(unsigned int j = 0; j < tx_list.size(); j++){
-			Tx tx = tx_list.at(i);
+			Tx tx = tx_list[j];
 			if(tx.getSender().compare(user) == 0 || tx.getReceiver().compare(user) == 0){
 				ret_list.push_back(tx);
 			}
@@ -63,7 +63,7 @@ std::vector<Tx> getValidTx(string user){
 	for(unsigned int i = 0; i < blk_vec.size(); i++){
 		vector<Tx> tx_list = blk_vec.at(i).getTxList();
 		for(unsigned int j = 0; j < tx_list.size(); j++){
-			Tx tx = tx_list.at(i);
+			Tx tx = tx_list.at(j);
 			std::vector<std::string> inputs = tx.getInputs();
 			std::vector<Tx>::iterator iter;
 			for(unsigned int k = 0; k < inputs.size(); k++){
@@ -123,7 +123,7 @@ string autoTxGenerator(){
 	
 	string receiver = base.at(i);
         Tx tx(user, receiver , input_ids, amount, change);
-
+		log_info("user is posting: " + tx.toString());
         return toString(tx);
 }
 
@@ -143,10 +143,15 @@ int main(int argc, char *argv[]) {
 	//if(argc > 2 && argv[2].compare("-m")) {
 	//	manual = true;
 	//}
-	
+	/* Create a logger and fill out this file*/
+    ofstream fl;
+    string logfile = "./logs/miner_" + toStr(timer()) + ".log";
+    fl.open(logfile.c_str());
+    create_logger(fl, std::cout);
+
 	std::string ip_address = argv[1];
 	std::string host_info =  ip_address + ":" + PORT;
-	
+	bc.printBC(bc.getBlockChain());
 	//pistache code for communication
 	Http::Client client;
 	auto opts = Http::Client::options().threads(1).maxConnectionsPerHost(8);
@@ -190,7 +195,7 @@ int main(int argc, char *argv[]) {
 		},Async::IgnoreException);
 
 		cout <<"Transaction posted to " << host_info+END_POINT_TX << endl;
-		sleep(5000);
+		sleep(5);
 	}
 	//client.shutdown();
 

@@ -15,6 +15,7 @@ class Tx{
 public:
 	Tx(string sender,string receiver,int amount);
 	Tx();
+	Tx(const Tx &t1);
 	Tx(string sender, string receiver, vector<string> inputTx, int amount,int leftoverAmount);
 	string getId();
 	string getSender();

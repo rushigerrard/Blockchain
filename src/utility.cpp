@@ -68,7 +68,7 @@ bool verify_tx(Tx tx) {
 					check1++;
 				}
 				//check2 = check if the input transaction is not input of other transactions
-				for(unsigned int l = 0; l < inputs1.size(); i++) {
+				for(unsigned int l = 0; l < inputs1.size(); l++) {
 					if(!inputs[k].compare(inputs1[l]) == 0) {
 						check2++;
 					}
@@ -77,8 +77,10 @@ bool verify_tx(Tx tx) {
 		}
 	}
 	if(total == tx.getAmount() + tx.getLeftoverAmt()){
+		log_info("Correct Tx " + tx.toString());
 	} else {
-		log_info("Amount + change is not matching");
+		log_info("Amount + change is not matching!");
+		log_info("Total : " + to_string(total) + " Amount : " + to_string(tx.getAmount()) +  " Change : " + to_string(tx.getLeftoverAmt()));
 		return false;
 	}
 	if((check1 == inputs.size()) & (check2 == 0)) {
