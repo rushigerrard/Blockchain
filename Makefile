@@ -21,7 +21,7 @@ SERVER_START_OBJECTS=$(filter-out $(MINER_MAIN:.cpp=.o) $(USER_MAIN:.cpp=.o), $(
 .PHONY: all bin clean
 
 all: bin
-bin: $(MINER_EXECUTABLE) $(SERVER_START_EXE)
+bin: $(MINER_EXECUTABLE) $(SERVER_START_EXE) $(USER_EXE)
 
 $(MINER_EXECUTABLE): $(MINER_OBJECTS) 
 	$(CXX) -o $@ $(MINER_OBJECTS) $(LIBS)

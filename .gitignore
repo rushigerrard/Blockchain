@@ -6,5 +6,6 @@ logs/*
 pistache/
 log4cplus/
 src/*.o*
+src/user
 backup/*.o*
 user/user

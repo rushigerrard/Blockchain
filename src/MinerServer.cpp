@@ -106,6 +106,7 @@ class MyHandler : public Http::Handler {
 					if(verify_tx(tx)) {
 						log_info("Transaction successfully verified. Adding it to a new block");
 						txlist.push_back(tx);
+						std::cout<<"TX: " << tx.toString()<<std::endl;
 						//add transaction to block
 						string broadcast_message = create_broadcast_message(reqString);
 						broadcast_transaction_message(broadcast_message);

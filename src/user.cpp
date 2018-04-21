@@ -1,4 +1,4 @@
-	//filename: user.cpp
+//filename: user.cpp
 //libraries for network communication
 #include <pistache/net.h>
 #include <pistache/http.h>
@@ -223,6 +223,5 @@ int main(int argc, char *argv[]) {
 		std::cout<<"Enter after block is added in miners blockchain\n";
 		std::cin >> dummy;
 	}
-	//client.shutdown();
 
 }
