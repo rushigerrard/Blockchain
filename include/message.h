@@ -14,6 +14,8 @@ class Message{
 public:
 	Message();
 	Message(string message_id,string message_body);
+	Message(const Message &m);
+
 	string getMessageId();
 	string getMessageBody();
 	
