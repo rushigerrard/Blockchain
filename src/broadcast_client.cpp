@@ -49,13 +49,14 @@ int broadcast_client(string serialized_message, string endpoint){
         std::atomic<size_t> failedRequests(2);
 
         int retry = 1;
-        string port_no = "9080";
         std::set<string>::iterator it;
+	log_info("Expected number of broadcasts :" + to_string(broadcast_ip_set.size()));
                 for( it = broadcast_ip_set.begin(); it != broadcast_ip_set.end(); it++){
-                        string candidate_ip = *it;
-                        string page = "http://" + candidate_ip + ":" + port_no + endpoint;
+                        string broadcast_ip = *it;
 
-                        log_info("Broadcasting " + endpoint + " to " + candidate_ip);
+                        string page = "http://" + broadcast_ip + ":" + to_string(port_no) + endpoint;
+
+			log_info("Trying API : " + page);
                         for(int i = 0; i < retry; i++){
                                         auto resp = client.post(page).cookie(Http::Cookie("lang", "en-US")).body(serialized_message).send();
                         resp.then([&](Http::Response response) {

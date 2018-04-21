@@ -437,7 +437,7 @@ int main(int argc, char *argv[]){
     //second thread to set flag to stop the execution of the previous thread by setting the flag
     std::thread monitorThread(monitor_stop_pow);
    
-	
+	candidate_ip_set.erase("");	
 	std::set<string>::iterator it;
 	for (it = candidate_ip_set.begin(); it != candidate_ip_set.end(); it++) {
     	if(my_ip.compare(*it) == 0){
