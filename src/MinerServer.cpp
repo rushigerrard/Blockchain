@@ -189,6 +189,7 @@ class MyHandler : public Http::Handler {
                                         	set<string> broadcast_list = read_broadcast_list();
                                         	string share_broadcast_string = toString(broadcast_list);
                                         	response.send(Http::Code::Ok, share_broadcast_string);
+log_info("Sharing my broadcast list with the newly arrived node");
                 			}
                         	}else{
                                 	response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
