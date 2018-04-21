@@ -183,6 +183,7 @@ int main(int argc, char *argv[]) {
 	}
 	while(!manual) {
 		//getting latest blockchain
+		log_info("Requesting for Blockchain....");
 		auto resp_get_bc = client.get(host_info+END_POINT_BC).cookie(Http::Cookie("lang", "en-US")).send();
 		resp_get_bc.then([&](Http::Response response){
 			std::cout << "Response Code = " << response.code() << std::endl;
@@ -218,7 +219,9 @@ int main(int argc, char *argv[]) {
 		},Async::IgnoreException);
 
 		cout <<"Transaction posted to " << host_info+END_POINT_TX << endl;
-		sleep(5);
+		//sleep(5);
+		std::cout<<"Enter after block is added in miners blockchain\n";
+		std::cin >> dummy;
 	}
 	//client.shutdown();
 
