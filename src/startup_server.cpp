@@ -338,6 +338,7 @@ void node_arrival_call(){
 			advance(it,rand()%candidate_ip_set.size());
 			candidate_ip = *it;
         }
+	get_blockchain(candidate_ip);
 	
 }
 string get_own_ip(){
