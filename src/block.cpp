@@ -18,9 +18,9 @@ string Block::printTxList(){
 	//cout<<"printTxList has "<<this->tx_list.size()<<"\n";
 	stringstream ss;
 	for(unsigned int i=0;i < this->tx_list.size(); i++){
-		ss << tx_list[i].toString();
-		log_info(tx_list[i].toString());
-		//cout<<tx_list[i].toString();
+		ss << tx_list[i].toString()<<"\n";
+		//log_info(tx_list[i].toString());
+		cout<<tx_list[i].toString()<<"\n";
 	}
 	return ss.str();
 }

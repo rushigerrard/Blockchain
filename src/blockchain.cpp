@@ -53,6 +53,9 @@ BlockChain::BlockChain(const int check){
 		Tx tx("ADMIN", *it, inputs, 100, 0);
 		bl.addTx(tx);
 	}
+	//Abhash is magic string used here
+	bl.setPrevHash(createHash("Abhash")); 
+	bl.generateHash();
 	//Block blk(10);	//create genesis Block with default values
 	blkchain.push_back(bl);
 }

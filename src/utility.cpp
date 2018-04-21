@@ -303,3 +303,28 @@ std::string toString(Message msg){
         oa << msg;
         return oss.str();
 }
+
+
+/*This function can be used to generate for any string with certain leading zero,
+	written for generating first Hash value*/
+
+string createHash(string s1){
+    long nounce = 0;
+    char temp[MATCHING_ZEROS + 1];
+    int i=0;
+    for(i=0;i<MATCHING_ZEROS;i++){
+        temp[i]='0';
+    }
+    temp[i]='\0';
+    string str(temp);
+    string hash;
+    string txList_str = s1;
+    do{
+        stringstream ss;
+        ss << txList_str << nounce;
+        hash = sha256(ss.str());
+        nounce++;
+    }while(hash.substr(0,MATCHING_ZEROS) != str);
+	cout<< "Hash is "<<hash<<endl;
+	return hash;
+}

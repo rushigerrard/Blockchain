@@ -356,7 +356,12 @@ void check_run_pow(){
 	unsigned int i=0;
     while (always_run_th){
         //locking on tx and  have to check, can we make bc and tx_list atomic and it may solve the problem
-        if(txlist.size()!=0 && !(pow_state)){
+        cout<< " Number of Tx are " << txlist.size() <<endl;
+		if(txlist.size()!=0 && !(pow_state)){
+			log_info("ABHASH: Print BC");
+			bc.printBC(bc.getBlockChain());
+			log_info("ABHASH: Intial Printing Done");
+			cout<<"Abhash: started working on pow"<<endl;
             tx_listMutex.lock();
             //set the proof of work as running
             pow_state = true;
@@ -384,12 +389,19 @@ void check_run_pow(){
             //don't want to hold lock for so long
             //lock bc
             bcMutex.lock();
-            if(!stop_block_creation && (bc.lastHash().compare(b1.getPrevHash())==0)){
+			cout<<"Abhash: Length of BlockChain" << bc.getBlockChain().size()<<endl;
+            cout<<"Abhash: stop_block_creation " <<stop_block_creation << " Last Hash " << bc.lastHash() << " prev Hash: "<< b1.getPrevHash()<<endl;
+			if(!stop_block_creation && (bc.lastHash().compare(b1.getPrevHash())==0)){
                 bc.addBlock_Last(b1);
+				log_info("Abhash: block added");
                 //TODO call a method to broadcast the block to other node as well
             }
+			log_info("Abhash: Printing BlockChain");
+			bc.printBC(bc.getBlockChain());
             //unlock the block chain
-            bcMutex.unlock();
+            log_info("Abhash: comming out");
+			bcMutex.unlock();
+			pow_state = false;
         } else {
             //you have to sleep for 30 seconds to get enough block in the shared txlist variable
             log_debug("Miner is sleeping,before running again");
