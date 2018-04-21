@@ -33,8 +33,8 @@ extern int port_no;
 extern int thr;
 extern string my_ip;
 extern string candidate_ip;
-extern vector<string> candidate_ip_set;
-
+extern set<string> candidate_ip_set;
+extern set<string> broadcast_ip_set;
 //global variables for business logic
 extern BlockChain bc;
 extern vector<Tx> txlist;
@@ -177,8 +177,7 @@ class MyHandler : public Http::Handler {
 
                 			auto query = req.query();
                 			if (query.has("chunked")) {
-									log_info("Using chunked encoding");
-
+						log_info("Using chunked encoding");
                     				response.headers()
                         			.add<Header::Server>("pistache/0.1")
                         			.add<Header::ContentType>(MIME(Text, Plain));
@@ -190,10 +189,12 @@ class MyHandler : public Http::Handler {
                                         	stream << ends;
                 			}
                 			else {
-                                        	set<string> broadcast_list = read_broadcast_list();
-                                        	string share_broadcast_string = toString(broadcast_list);
-                                        	response.send(Http::Code::Ok, share_broadcast_string);
-log_info("Sharing my broadcast list with the newly arrived node");
+                                        	string new_node_ip = req.body();
+                                        	string share_broadcast_string = toString(broadcast_ip_set);
+                                        	broadcast_ip_set.insert(new_node_ip);
+						response.send(Http::Code::Ok, share_broadcast_string);
+						log_info("Sharing my broadcast list with the newly arrived node");
+						
                 			}
                         	}else{
                                 	response.send(Http::Code::Ok, req.body(), MIME(Text, Plain));
