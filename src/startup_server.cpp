@@ -23,7 +23,6 @@
 #include "logger.h"
 #include "tx.h"
 
-
 using namespace std;
 using namespace Pistache;
 using namespace Pistache::Http;
@@ -46,6 +45,7 @@ extern std::atomic<bool> pow_state; //thread 1 is running
 extern std::mutex bcMutex;
 extern std::mutex tx_listMutex;
 
+int broadcast_solved_block_message(string s1);
 void stabilization_workflow();
 void api_service();
 
@@ -442,6 +442,8 @@ void check_run_pow(){
                 bc.addBlock_Last(b1);
 				log_info("Abhash: block added");
                 //TODO call a method to broadcast the block to other node as well
+				string sendBlk = toString(b1);
+				broadcast_solved_block_message(sendBlk);
             }
 			log_info("Abhash: Printing BlockChain");
 			bc.printBC(bc.getBlockChain());
