@@ -121,7 +121,7 @@ string autoTxGenerator(){
 		j = rand()%4;
 	}
 	
-	string receiver = base.at(i);
+	string receiver = base.at(j);
         Tx tx(user, receiver , input_ids, amount, change);
 		log_info("user is posting: " + tx.toString());
         return toString(tx);
