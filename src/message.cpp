@@ -86,12 +86,12 @@ bool message_previously_read(string message){
 	
 	if(message_set.find(message_id) == message_set.end()){
 		//seeing the message for the first time
-		log_info("New broadcast message received.");
+		log_info("New broadcast message received. Message_id : " + message_id);
 		message_set.insert(message_id);
 		
 		//inform that message was not seen before
 		return false;
 	}
-	log_info("Broadcast was seen earlier. Dropping the current request.");
+	log_info("Broadcast was seen earlier. Dropping the current message. Message_id : " + message_id);
 	return true;	
 }

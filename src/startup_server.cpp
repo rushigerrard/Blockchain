@@ -191,6 +191,52 @@ int ping_candidate(){
                 return 1;
 
 }
+int get_blockchain(string receiver_ip_address){
+
+        Http::Client client;
+
+        bool success = false;
+        auto opts = Http::Client::options()
+        .threads(1)
+        .maxConnectionsPerHost(8);
+
+        client.init(opts);
+
+        std::vector<Async::Promise<Http::Response>> responses;
+        log_info("Connecting to candidate IP : " + receiver_ip_address);
+        std::atomic<size_t> completedRequests(2);
+        std::atomic<size_t> failedRequests(2);
+
+        int retry = 1;
+        string port_no = "9080";
+
+        string page = "http://" + receiver_ip_address + ":" + port_no + "/blockchain";
+
+        log_info("Trying the API : " + page);
+        for(int i = 0; i < retry; i++){
+        auto resp = client.get(page).cookie(Http::Cookie("lang", "en-US")).body(my_ip).send();
+        resp.then([&](Http::Response response) {
+                ++completedRequests;
+		auto body = response.body();
+		if (!body.empty()){
+			log_info("Received blockchain from " + receiver_ip_address);
+            		bc = toBlockChain(body);
+			bc.printBC(bc.getBlockChain());
+		}
+                success = true;
+
+        }, Async::IgnoreException);
+        responses.push_back(std::move(resp));
+        }
+        sleep(2);
+        auto sync = Async::whenAll(responses.begin(), responses.end());
+        Async::Barrier<std::vector<Http::Response>> barrier(sync);
+        client.shutdown();
+        if(success == true)
+                return 0;
+        else
+                return 1;
+}
 int arrival_informed(string receiver_ip_address){
 
         Http::Client client;
@@ -292,6 +338,7 @@ void node_arrival_call(){
 			advance(it,rand()%candidate_ip_set.size());
 			candidate_ip = *it;
         }
+	
 }
 string get_own_ip(){
         int fd;
@@ -467,43 +514,13 @@ int main(int argc, char *argv[]){
 		stabilization_workflow();
     }else{
 		log_info("Node is a candidate node");
+		BlockChain reinit(10);
+		bc = reinit;
 		api_service();
 	}
 	powThread.join();
     return 0;
 }
 
-/*
-Here are the steps which timestamp server does on booting up
-
-Step 1.
-Gets its own public ip
-
-Step 2.
-Based on the public ip and candidate list, identifies if it is a candidate member or not
-
-Step 3.1
-If it is a candidate member, generates a broadcast list based on candidate list (includes all but its own ip)
-
-Step 3.2
-If it isn't a candidate member, it means it is a new node being added to the cluster.
-
-It copies the entire candidate list as broadcast list.
-
-        Step 3.2.2
-        The new node (say nn1) contacts one of the candidate IP addresses (say C_IP1) randomly using  /arrival API. As a response, C_IP1 will share its broadcast list with new node in the response.
-        If the above request fails, nn1 contacts another candidate IP - say C_IPn until the request goes through
-
-        Step 3.2.3
-        C_IP1 updates its broadcast list to include nn1's IP address
-
-        Step 3.2.4
-        All new nodes now can receive broadcast only through the candidate IP address they connected to. Hence, they need to check if the candidate node is up at all times. Through /ping API (runs ones every minute), they will ensure the candidate node is up. If it isn't, they will follow steps 3.2.2 - 3.2.4 all over again.
-
-Step 4
-//TODO
-WHAT IF ALL CANDIDATE NODES GO DOWN?
-
-*/
 
 

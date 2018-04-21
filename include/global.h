@@ -26,7 +26,7 @@ string candidate_ip;
 set<string> candidate_ip_set;
 set<string> broadcast_ip_set;
 set<string> message_set;
-BlockChain bc(10);
+BlockChain bc;
 
 vector<Tx> txlist;  //for confirmed Tx
 vector<Tx> txlist_uv; //for unconfirmed tx
