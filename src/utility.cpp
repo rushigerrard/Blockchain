@@ -50,18 +50,20 @@ bool verify_tx(Tx tx) {
 	int check2 = 0;
 	int total = 0;
 	vector<Block> blkchain = bc.getBlockChain();
+	log_info("BlockChain has " + to_string(blkchain.size()) + " blocks.");
 	for(unsigned int i = 0; i < blkchain.size(); i++) {
 		Block blk = blkchain[i];
 		vector<Tx> tx_list = blk.getTxList();
-		for(unsigned int j = 0; j < tx_list.size(); i++) {
+		log_info("block number " + to_string(i+1) + " has " + to_string(tx_list.size()) + " transactions.");
+		for(unsigned int j = 0; j < tx_list.size(); j++) {
 			vector<string> inputs1 = tx_list[j].getInputs();
 			//check1 = check if the input transactions are present
 			for(unsigned int k = 0; k < inputs.size(); k++) {
 				if(inputs[k].compare(tx_list[j].getId()) == 0) {
-					if(tx_list.at(j).getSender().compare(inputs[k])){
-						total += tx_list.at(j).getLeftoverAmt();
-					}else if(tx_list.at(j).getReceiver().compare(inputs[k])){
-						total += tx_list.at(j).getAmount();
+					if(tx_list[j].getSender().compare(inputs[k])){
+						total += tx_list[j].getLeftoverAmt();
+					}else if(tx_list[j].getReceiver().compare(inputs[k])){
+						total += tx_list[j].getAmount();
 					} else {
 						log_info("Verification failed");
 					}
@@ -69,7 +71,8 @@ bool verify_tx(Tx tx) {
 				}
 				//check2 = check if the input transaction is not input of other transactions
 				for(unsigned int l = 0; l < inputs1.size(); l++) {
-					if(!inputs[k].compare(inputs1[l]) == 0) {
+					if(!(inputs[k].compare(inputs1[l]) == 0)) {
+						log_info("Verification failed due to double spending");
 						check2++;
 					}
 				}

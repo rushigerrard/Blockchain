@@ -140,6 +140,7 @@ class MyHandler : public Http::Handler {
 					response.send(Http::Code::Ok, "Send GET request for blockchain", MIME(Text, Plain));
 				} else if(req.method() == Http::Method::Get) {
 					log_info("Sending current blockchain");
+					bc.printBC(bc.getBlockChain());
 					response.send(Http::Code::Ok, toString(bc), MIME(Text, Plain));
 				}
 			}else if(req.resource() == "/solved_block"){

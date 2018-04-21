@@ -1,4 +1,4 @@
-//filename: user.cpp
+	//filename: user.cpp
 //libraries for network communication
 #include <pistache/net.h>
 #include <pistache/http.h>
@@ -15,6 +15,7 @@
 #include "block.h"
 #include "blockchain.h"
 #include "utils.h"
+#include "global.h"
 //other c++ libraries
 #include <fstream>
 #include <iostream>
@@ -22,7 +23,6 @@
 #include <string>
 #include <unistd.h>
 #include <cstdlib>
-#include "global.h"
 
 #define PORT "9080"
 #define END_POINT_TX "/tx"
@@ -33,7 +33,7 @@ using namespace Pistache;
 using namespace Pistache::Http;
 
 //global variables
-extern BlockChain bc;
+BlockChain bc1;
 vector<Block> blk_vec;
 std::vector<string> base = {"A", "B", "C", "D"};
 
@@ -48,27 +48,31 @@ struct NoBlockchainException : public exception {
 std::vector<Tx> getValidTx(string user){
 	//get list of tx where user is either sender or receiver
 	vector<Tx> ret_list;
-	blk_vec = bc.getBlockChain();
+	blk_vec = bc1.getBlockChain();
+	log_info("Number of blocks in BlockChain: " + to_string(blk_vec.size()));
 	for(unsigned int i = 0; i < blk_vec.size(); i++){
 		vector<Tx> tx_list = blk_vec.at(i).getTxList();
+		log_info("Block number " + to_string(i+1) + " has " + to_string(tx_list.size()) + " transactions.");
 		for(unsigned int j = 0; j < tx_list.size(); j++){
 			Tx tx = tx_list[j];
 			if(tx.getSender().compare(user) == 0 || tx.getReceiver().compare(user) == 0){
+				log_info("While verifying transaction's existence. User: " + user + " Sender: " + tx.getSender() + " Receiver: " + tx.getReceiver()); 
 				ret_list.push_back(tx);
 			}
 		}	
 	}
+	log_info("Number of transaction where user is either sender or receiver: " + to_string(ret_list.size())); 
 	// check if these transactions are used in other transactions
 	// if used remove them
 	for(unsigned int i = 0; i < blk_vec.size(); i++){
-		vector<Tx> tx_list = blk_vec.at(i).getTxList();
+		vector<Tx> tx_list = blk_vec[i].getTxList();
 		for(unsigned int j = 0; j < tx_list.size(); j++){
-			Tx tx = tx_list.at(j);
+			Tx tx = tx_list[j];
 			std::vector<std::string> inputs = tx.getInputs();
 			std::vector<Tx>::iterator iter;
 			for(unsigned int k = 0; k < inputs.size(); k++){
 				for (iter = ret_list.begin(); iter != ret_list.end(); ) {
-					if(iter->getId().compare(inputs.at(k)) == 0){
+					if(iter->getId().compare(inputs[k]) == 0){
 						iter = ret_list.erase(iter);
 					}else{
 						iter++;
@@ -77,6 +81,7 @@ std::vector<Tx> getValidTx(string user){
 			}
 		}	
 	}
+	log_info("Number of transaction where user is either sender or receiver: " + to_string(ret_list.size()));
 	// return the remaining list
 	return ret_list;	
 }
@@ -115,6 +120,7 @@ string autoTxGenerator(){
 	int total = getTotal(user, inputs);
 	int amount = rand()%total;
 	int change = total - amount;
+	log_info("Total: " + to_string(total) + " Amount: " + to_string(amount) + " Change: " + to_string(change));
 	//choose a random receiver other than user
 	int j = rand()%4;
 	while(i == j){
@@ -151,7 +157,7 @@ int main(int argc, char *argv[]) {
 
 	std::string ip_address = argv[1];
 	std::string host_info =  ip_address + ":" + PORT;
-	bc.printBC(bc.getBlockChain());
+	bc1.printBC(bc1.getBlockChain());
 	//pistache code for communication
 	Http::Client client;
 	auto opts = Http::Client::options().threads(1).maxConnectionsPerHost(8);
@@ -170,8 +176,9 @@ int main(int argc, char *argv[]) {
 			auto body = response.body();
 			try{
 				if(!body.empty()){
-					bc = toBlockChain(body); 
-					std::cout << "Received blockchain from Miner" << std::endl;
+					bc1 = toBlockChain(body); 
+					std::cout << "Received blockchain from Miner: " << std::endl;
+					bc1.printBC(bc1.getBlockChain());  
 				}else{
 					throw NoBlockchainException();
 				}
@@ -182,7 +189,10 @@ int main(int argc, char *argv[]) {
 				return 0;
 			}
 		},Async::IgnoreException);
-
+		
+		std::string dummy;
+		std::cin >> dummy;
+		
 		//creating tx to post it to miner
 		std::string tx = autoTxGenerator();
 		auto resp_post_tx = client.post(host_info+END_POINT_TX).cookie(Http::Cookie("lang", "en-US")).body(tx).send();
