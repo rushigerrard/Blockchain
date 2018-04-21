@@ -75,6 +75,7 @@ int broadcast_client(string serialized_message, string endpoint){
                         }
                         auto sync = Async::whenAll(responses.begin(), responses.end());
                         Async::Barrier<std::vector<Http::Response>> barrier(sync);
+			sleep(2);
                 }
         client.shutdown();
 	 //V IMPORTANT - don't remove sleep(2)
