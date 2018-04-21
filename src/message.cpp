@@ -23,6 +23,12 @@ Message::Message(string message_id, string message_body){
         this->message_body = message_body;
 }
 
+//copy constructor
+Message::Message(const Message &m){
+	this->message_id = m.message_id;
+	this->message_body = m.message_body;
+}
+
 string Message::getMessageId(){
         return this->message_id;
 }
