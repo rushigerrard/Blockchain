@@ -263,7 +263,12 @@ int timer_start(std::function<int(void)> func, unsigned int interval)
         return 0;
 }
 void other_thread(){
+	if(!api_service_running){	
 		api_service();
+		api_service_running = true;
+	}else{
+		api_service_running = false;
+	}
 }
 void ping_service(){
         log_info("Ping server started");

@@ -31,6 +31,7 @@ BlockChain bc;
 vector<Tx> txlist;  //for confirmed Tx
 vector<Tx> txlist_uv; //for unconfirmed tx
 
+std::atomic<bool> api_service_running(false);
 std::atomic<bool> stop_block_creation(true); //this variable for thread 2 to stop the pow work state
 std::atomic<bool> always_run_th(true);  //th1 and th2 while loop check whehther it is good to run
 std::atomic<bool> pow_state(false);     // this is a indication that thread 1 running  pow
