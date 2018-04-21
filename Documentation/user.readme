@@ -1,0 +1,7 @@
+Compilation:
+
+g++ user.cpp message.cpp tx.cpp utility.cpp broadcast_client.cpp block.cpp blockchain.cpp -std=c++11 -lpistache -lpthread -lboost_system -lboost_serialization -lssl -lcrypto -I ../include/ -o user
+
+Running:
+
+./user <ip_addr>
