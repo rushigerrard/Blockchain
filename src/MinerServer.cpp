@@ -124,8 +124,11 @@ class MyHandler : public Http::Handler {
 					
 					if(message_previously_read(message)){
 						if(verify_transaction_message(message)) {
-							//TODO double serialization
-							//txlist.push_back(tx);
+							Message m = toMessage(message);
+							string message_body = m.getMessageBody();
+                					Tx tx = toTx(message_body);
+							log_info("Added transaction to transaction list");
+							txlist.push_back(tx);
 							broadcast_transaction_message(message);
 						}	
 					}else{
