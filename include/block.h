@@ -29,6 +29,7 @@ public:
 	void addTx(Tx t1);
 	Block(int u);				//to create a genessis block
 	Block();					//To create a Normal Block but we have to use set prevhash method after this
+	Block(const Block &b);
 	Block(string prevHash);		//this will set prevHash from BlockChiain
 	string getPrevHash();			//get prevHash from blockchain
 	void setPrevHash(string hash);	//set prevHash from tailNode of BlockChain

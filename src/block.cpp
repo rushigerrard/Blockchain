@@ -50,8 +50,9 @@ string Block::generateHash(){
 //print the content of this block
 void Block::printBlock(){
 	log_info("Block information : ");
-	log_info("prevHash : " + this->prevHash + " Nounce : " + to_string(nounce) + " Hash  : " + myHash);
-	printTxList();
+	log_info("prevHash : " + this->prevHash + " Nounce : " + to_string(nounce) + " Hash  : " + myHash + " TX: " + printTxList());
+	//cout << "prevHash : " << this->prevHash + " Nounce : " << to_string(nounce) << " Hash : " + this->myHash<<endl;
+	//cout<< printTxList();
 }
 
 //toString
@@ -88,6 +89,13 @@ Block::Block(){
 	prevHash= "";
 	myHash = "";
 	nounce = 0;
+}
+//copy constructor
+Block::Block(const Block &b){
+	prevHash = b.prevHash;
+	nounce = b.nounce;
+	myHash = b.myHash;
+	tx_list = b.tx_list;
 }
 
 Block::Block(string hash){

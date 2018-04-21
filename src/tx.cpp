@@ -31,6 +31,16 @@ Tx::Tx(string sender, string receiver,vector<string> inputs, int amount,int left
 	this->leftoverAmt = leftoverAmount;
 }
 
+Tx::Tx(const Tx &t2){
+	cout<<"copy constructor\n";
+	TxId = t2.TxId;
+	sender = t2.sender;
+	receiver = t2.receiver;
+	inputTx = t2.inputTx;
+	amount = t2.amount;
+	leftoverAmt = t2.leftoverAmt;
+}
+
 string Tx::getSender(){
 	return this->sender;
 }

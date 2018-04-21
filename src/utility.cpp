@@ -67,7 +67,7 @@ bool verify_tx(Tx tx) {
 					check1++;
 				}
 				//check2 = check if the input transaction is not input of other transactions
-				for(unsigned int l = 0; l < inputs1.size(); i++) {
+				for(unsigned int l = 0; l < inputs1.size(); l++) {
 					if(!inputs[k].compare(inputs1[l]) == 0) {
 						check2++;
 					}
@@ -77,6 +77,7 @@ bool verify_tx(Tx tx) {
 	}
 	if(total == tx.getAmount() + tx.getLeftoverAmt()){
 	} else {
+	std::cout << "amount + change is not matching! Total: " << total << "Amount: " << tx.getAmount() << "Change: " << tx.getLeftoverAmt() << std::endl;
 		std::cout << "amount + change is not matching" << std::endl;
 		return false;
 	}
