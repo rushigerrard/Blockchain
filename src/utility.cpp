@@ -59,23 +59,29 @@ bool verify_tx(Tx tx) {
 			vector<string> inputs1 = tx_list[j].getInputs();
 			//check1 = check if the input transactions are present
 			for(unsigned int k = 0; k < inputs.size(); k++) {
-				if(inputs[k].compare(tx_list[j].getId()) == 0) {
-					if(tx_list[j].getSender().compare(inputs[k])){
-						total += tx_list[j].getLeftoverAmt();
-					}else if(tx_list[j].getReceiver().compare(inputs[k])){
-						total += tx_list[j].getAmount();
+					if(inputs[k].compare(tx_list[j].getId()) == 0) {
+					log_info("input tx id match. id: "+ inputs[k]);
+					log_info("user: " + tx.getSender() + " compared tx sender: " + tx_list[j].getSender() + " compared tx receiver: " + tx_list[j].getReceiver());
+					if(tx_list[j].getSender().compare(tx.getSender()) == 0){
+						log_info("sender match. total: " + to_string(total) + " change: " + to_string(tx_list[j].getLeftoverAmt()));
+						total = total + tx_list[j].getLeftoverAmt();
+					}else if(tx_list[j].getReceiver().compare(tx.getSender()) == 0){
+						log_info("receiver match. total: " + to_string(total) + " amount: " + to_string(tx_list[j].getAmount()));
+						total = total +  tx_list[j].getAmount();
 					} else {
 						log_info("Verification failed");
 					}
 					check1++;
 				}
+				log_info("check1: " + to_string(check1) + " total: " + to_string(total));
 				//check2 = check if the input transaction is not input of other transactions
 				for(unsigned int l = 0; l < inputs1.size(); l++) {
-					if(!(inputs[k].compare(inputs1[l]) == 0)) {
+					if(inputs[k].compare(inputs1[l]) == 0) {
 						log_info("Verification failed due to double spending");
 						check2++;
 					}
 				}
+				log_info("check2: " + to_string(check2) + " total: " + to_string(total));
 			}
 		}
 	}

@@ -149,15 +149,28 @@ int main(int argc, char *argv[]) {
 	//if(argc > 2 && argv[2].compare("-m")) {
 	//	manual = true;
 	//}
-	/* Create a logger and fill out this file*/
-    ofstream fl;
-    string logfile = "./logs/miner_" + toStr(timer()) + ".log";
-    fl.open(logfile.c_str());
-    create_logger(fl, std::cout);
 
+	/* Create a logger and fill out this file*/
+	ofstream fl;
+	string logfile = "./logs/miner_" + toStr(timer()) + ".log";
+	fl.open(logfile.c_str());
+	create_logger(fl, std::cout);
+	
+	/*
+	string bd = toString(bc);
+	BlockChain bc2;
+	log_info("Block 2 created and printing it");
+	bc2 = toBlockChain(bd);
+	bc2.printBC(bc2.getBlockChain());
+	bc1 = bc2;
+	log_info("printing block 1 after assignment");
+	bc1.printBC(bc1.getBlockChain());
+	log_info("Done");
+	*/
+	
 	std::string ip_address = argv[1];
 	std::string host_info =  ip_address + ":" + PORT;
-	bc1.printBC(bc1.getBlockChain());
+	
 	//pistache code for communication
 	Http::Client client;
 	auto opts = Http::Client::options().threads(1).maxConnectionsPerHost(8);

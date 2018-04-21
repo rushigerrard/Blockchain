@@ -42,7 +42,7 @@ vector<Block> BlockChain::getBlockChain() {
 	return blkchain;
 }
 //constructor
-BlockChain::BlockChain(){
+BlockChain::BlockChain(const int check){
 	//creating genesis block with default transactions
 	//log_info("Creating genesis block for blockchain");
 	std::set<std::string> base = {"A", "B", "C", "D"};
@@ -57,6 +57,8 @@ BlockChain::BlockChain(){
 	blkchain.push_back(bl);
 }
 
+BlockChain::BlockChain(){
+}
 //copy Constructor
 BlockChain::BlockChain(const BlockChain &bc){
 	blkchain = bc.blkchain;
