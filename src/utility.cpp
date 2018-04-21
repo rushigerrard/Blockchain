@@ -76,6 +76,7 @@ bool verify_tx(Tx tx) {
 		}
 	}
 	if(total == tx.getAmount() + tx.getLeftoverAmt()){
+		log_info("Correct Tx " + tx.toString());
 	} else {
 	std::cout << "amount + change is not matching! Total: " << total << "Amount: " << tx.getAmount() << "Change: " << tx.getLeftoverAmt() << std::endl;
 		std::cout << "amount + change is not matching" << std::endl;

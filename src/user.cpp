@@ -123,7 +123,7 @@ string autoTxGenerator(){
 	
 	string receiver = base.at(i);
         Tx tx(user, receiver , input_ids, amount, change);
-
+		log_info("user is posting: " + tx.toString());
         return toString(tx);
 }
 
