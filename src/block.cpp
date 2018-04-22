@@ -6,6 +6,7 @@
 #include <sstream>
 #include<iostream>
 #include "message.h"
+#include<atomic>
 using namespace std;
 
 //To Generate Hash We had used order
