@@ -324,7 +324,7 @@ void other_thread(){
 }
 void ping_service(){
         log_info("Ping server started");
-        timer_start(ping_candidate, 5000);
+        timer_start(ping_candidate, 500000);
         other_thread();
 
 }
