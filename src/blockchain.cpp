@@ -50,7 +50,7 @@ BlockChain::BlockChain(const int check){
 	Block bl;
 	for(it = base.begin(); it != base.end(); it++){
 		std::vector<std::string> inputs = {"_default_"};
-		Tx tx("ADMIN", *it, inputs, 100, 0);
+		Tx tx("ID", "ADMIN", *it, inputs, 100, 0);
 		bl.addTx(tx);
 	}
 	//Abhash is magic string used here
