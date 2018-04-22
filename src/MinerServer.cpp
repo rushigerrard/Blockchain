@@ -39,6 +39,8 @@ extern set<string> broadcast_ip_set;
 extern BlockChain bc;
 extern vector<Tx> txlist;
 extern vector<Tx> txlist_uv;
+extern mutex tx_listMutex;
+extern mutex bcMutex; 
 
 bool verify_tx(Tx );
 void verify_received_block(Block b1);
@@ -105,7 +107,9 @@ class MyHandler : public Http::Handler {
 					txlist_uv.push_back(tx);		
 					if(verify_tx(tx)) {
 						log_info("Transaction successfully verified. Adding it to a new block");
-						txlist.push_back(tx);
+						tx_listMutex.lock();
+                                                txlist.push_back(tx);
+                                                tx_listMutex.unlock();
 						//add transaction to block
 						string broadcast_message = create_broadcast_message(reqString);
 						broadcast_transaction_message(broadcast_message);
@@ -128,7 +132,9 @@ class MyHandler : public Http::Handler {
 							string message_body = m.getMessageBody();
                 					Tx tx = toTx(message_body);
 							log_info("Added transaction to transaction list");
+							tx_listMutex.lock();
 							txlist.push_back(tx);
+							tx_listMutex.unlock();
 							broadcast_transaction_message(message);
 						}	
 					}else{
@@ -142,8 +148,10 @@ class MyHandler : public Http::Handler {
 				if(req.method() == Http::Method::Post){
 					response.send(Http::Code::Ok, "Send GET request for blockchain", MIME(Text, Plain));
 				} else if(req.method() == Http::Method::Get) {
+					bcMutex.lock();
 					log_info("Sending current blockchain");
 					bc.printBC(bc.getBlockChain());
+					bcMutex.unlock();
 					response.send(Http::Code::Ok, toString(bc), MIME(Text, Plain));
 				}
 			}else if(req.resource() == "/solved_block"){

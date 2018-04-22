@@ -344,19 +344,6 @@ void node_arrival_call(){
 	get_blockchain(candidate_ip);
 	
 }
-string get_own_ip(){
-        int fd;
-        struct ifreq ifr;
-        char iface[] = "eth1";
-        fd = socket(AF_INET, SOCK_DGRAM, 0);
-        //Type of address to retrieve - IPv4 IP address
-        ifr.ifr_addr.sa_family = AF_INET;
-        //Copy the interface name in the ifreq structure
-        strncpy(ifr.ifr_name , iface , IFNAMSIZ-1);
-        ioctl(fd, SIOCGIFADDR, &ifr);
-        close(fd);
-        return inet_ntoa(( (struct sockaddr_in *)&ifr.ifr_addr )->sin_addr);
-}
 void stabilization_workflow(){
         log_info("Starting stabilization process...");
         sleep(5);
@@ -407,7 +394,8 @@ void check_run_pow(){
 	unsigned int i=0;
     while (always_run_th){
         //locking on tx and  have to check, can we make bc and tx_list atomic and it may solve the problem
-        cout<< " Number of Tx are " << txlist.size() <<endl;
+	//cout<< " Number of Tx are " << txlist.size() <<endl;
+	log_info("Number of transactions of TX are " + to_string(txlist.size()));
 		if(txlist.size()!=0 && !(pow_state)){
 			stop_block_creation = false;//this is to indeicate that tx present allow generate hash
 			log_info("ABHASH: Print BC");
@@ -415,6 +403,7 @@ void check_run_pow(){
 			log_info("ABHASH: Intial Printing Done");
 			cout<<"Abhash: started working on pow"<<endl;
             tx_listMutex.lock();
+		check_txlist();
             //set the proof of work as running
             pow_state = true;
             //copy the txlist to your local variable and then create a block and start mining it
@@ -523,8 +512,10 @@ int main(int argc, char *argv[]){
 		stabilization_workflow();
     }else{
 		log_info("Node is a candidate node");
+		bcMutex.lock();
 		BlockChain reinit(10);
 		bc = reinit;
+		bcMutex.unlock();
 		api_service();
 	}
 	powThread.join();

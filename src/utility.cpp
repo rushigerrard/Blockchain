@@ -14,6 +14,14 @@
 #include <pistache/http.h>
 #include <pistache/client.h>
 #include "pistache/endpoint.h"
+//libraries for system resources
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#include <unistd.h>
+#include <arpa/inet.h>
 //libraries for serialization
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
@@ -38,6 +46,38 @@ Logger *log1;
 extern BlockChain bc;
 extern vector<Tx> txlist;
 extern vector<Tx> txlist_uv;
+extern mutex bcMutex; 
+
+//function to verify transactions within txlist
+void check_txlist() {
+        std::vector<Tx> repeat;
+        for(unsigned int i = 0; i < txlist.size() ; i++){
+                std::vector<std::string> inputs1 = txlist[i].getInputs();
+                for(unsigned int j = i+1; j < txlist.size(); j++){
+                        std::vector<std::string> inputs2 = txlist[j].getInputs();
+                        for(unsigned int k = 0; k < inputs1.size(); k++){
+                                for(unsigned int l = 0; l < inputs2.size(); l++){
+                                        if(inputs1[k].compare(inputs2[l])){
+                                                repeat.push_back(txlist[j]);
+                                        }
+                                }
+                        }
+
+                }
+        }
+	log_info("Repeat list size :  " +  to_string(repeat.size()));
+        std::vector<Tx>::iterator iter;
+        for(unsigned int i = 0; i < repeat.size(); i++){
+                for (iter = txlist.begin(); iter != txlist.end(); ) {
+                        if(iter->getId().compare(repeat[i].getId()) == 0){
+                                iter = txlist.erase(iter);
+                        }else{
+                                iter++;
+                        }
+                }
+        }
+
+}
 //function to verify transaction
 bool verify_tx(Tx tx) {
 	//get the input transactions
@@ -49,6 +89,7 @@ bool verify_tx(Tx tx) {
 	unsigned int check1 = 0;
 	int check2 = 0;
 	int total = 0;
+	bcMutex.lock();
 	vector<Block> blkchain = bc.getBlockChain();
 	log_info("BlockChain has " + to_string(blkchain.size()) + " blocks.");
 	for(unsigned int i = 0; i < blkchain.size(); i++) {
@@ -85,6 +126,7 @@ bool verify_tx(Tx tx) {
 			}
 		}
 	}
+	bcMutex.unlock(); 
 	if(total == tx.getAmount() + tx.getLeftoverAmt()){
 		log_info("Correct Tx " + tx.toString());
 	} else {
@@ -328,3 +370,18 @@ string createHash(string s1){
 	cout<< "Hash is "<<hash<<endl;
 	return hash;
 }
+
+string get_own_ip(){
+        int fd;
+        struct ifreq ifr;
+        char iface[] = "eth1";
+        fd = socket(AF_INET, SOCK_DGRAM, 0);
+        //Type of address to retrieve - IPv4 IP address
+        ifr.ifr_addr.sa_family = AF_INET;
+        //Copy the interface name in the ifreq structure
+        strncpy(ifr.ifr_name , iface , IFNAMSIZ-1);
+        ioctl(fd, SIOCGIFADDR, &ifr);
+        close(fd);
+        return inet_ntoa(( (struct sockaddr_in *)&ifr.ifr_addr )->sin_addr);
+}
+

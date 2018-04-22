@@ -14,7 +14,7 @@ Tx::Tx(){
 }
 Tx::Tx(string sender, string receiver,int amount){
 	const long double sysTime = time(0);
-	this->TxId = sender + receiver + to_string(sysTime);
+	this->TxId = sender + "_" + receiver + "_" + get_own_ip() + "_" + to_string(sysTime);
 	this->sender = sender;
 	this->receiver = receiver;
 	this->amount= amount;
@@ -23,7 +23,7 @@ Tx::Tx(string sender, string receiver,int amount){
 
 Tx::Tx(string sender, string receiver,vector<string> inputs, int amount,int leftoverAmount){
 	const long double sysTime = time(0);
-	this->TxId = sender + receiver + to_string(sysTime);
+	this->TxId = sender + "_" + receiver + "_" + get_own_ip() + "_" + to_string(sysTime);
 	this->sender = sender;
 	this->receiver = receiver;
 	this->inputTx = inputs;
