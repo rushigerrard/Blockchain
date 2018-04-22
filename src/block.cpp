@@ -6,10 +6,12 @@
 #include <sstream>
 #include<iostream>
 #include "message.h"
+#include<atomic>
 using namespace std;
 
 //To Generate Hash We had used order
 // NewHash = Hash(PrevHash + TxList + Nounce)
+extern std::atomic<bool> stop_block_creation;
 
 vector<Tx> Block::getTxList() {
 	return tx_list;
@@ -41,7 +43,7 @@ string Block::generateHash(){
         ss << this->prevHash << txList_str << nounce;
         hash = sha256(ss.str());
         nounce++;
-    }while(hash.substr(0,MATCHING_ZEROS) != str);
+    }while((stop_block_creation == false) && hash.substr(0,MATCHING_ZEROS) != str);
 	this->nounce = nounce - 1;		// AS ++ will increase it to one more
 	this->myHash = hash;
     	cout<<"[ INFO ] "<< getCurrentTime() <<" : Block created with nounce : " <<this->nounce <<" and hash : "<<this->myHash<<endl;
