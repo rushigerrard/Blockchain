@@ -89,8 +89,8 @@ bool message_previously_read(string message){
 		message_set.insert(message_id);
 		
 		//inform that message was not seen before
-		return false;
+		return true;
 	}
 	log_info("Broadcast was seen earlier. Dropping the current message. Message_id : " + message_id);
-	return true;	
+	return false;	
 }
