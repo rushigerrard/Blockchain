@@ -126,7 +126,10 @@ void verify_received_block(Block b1){
             }
         }
         //set the proper flag to stop the execution of thread 1
-
+		stop_block_creation = true;
+		bcMutex.lock();
+        bc.addBlock_Last(b1);
+        bcMutex.unlock();
     }
 }
 
@@ -406,6 +409,7 @@ void check_run_pow(){
         //locking on tx and  have to check, can we make bc and tx_list atomic and it may solve the problem
         cout<< " Number of Tx are " << txlist.size() <<endl;
 		if(txlist.size()!=0 && !(pow_state)){
+			stop_block_creation = false;//this is to indeicate that tx present allow generate hash
 			log_info("ABHASH: Print BC");
 			bc.printBC(bc.getBlockChain());
 			log_info("ABHASH: Intial Printing Done");
@@ -437,19 +441,21 @@ void check_run_pow(){
             //don't want to hold lock for so long
             //lock bc
             bcMutex.lock();
-			cout<<"Abhash: Length of BlockChain" << bc.getBlockChain().size()<<endl;
+			cout<<"Abhash: Length of BlockChain before adding " << bc.getBlockChain().size()<<endl;
             cout<<"Abhash: stop_block_creation " <<stop_block_creation << " Last Hash " << bc.lastHash() << " prev Hash: "<< b1.getPrevHash()<<endl;
 			if(!stop_block_creation && (bc.lastHash().compare(b1.getPrevHash())==0)){
                 bc.addBlock_Last(b1);
 				log_info("Abhash: block added");
-                //TODO call a method to broadcast the block to other node as well
+                //call a method to broadcast the block to other node as well
 				string sendBlk = toString(b1);
 				broadcast_solved_block_message(sendBlk);
-            }
-			log_info("Abhash: Printing BlockChain");
-			bc.printBC(bc.getBlockChain());
-            //unlock the block chain
-            log_info("Abhash: comming out");
+				log_info("Abhash: Printing BlockChain after adding");
+				bc.printBC(bc.getBlockChain());
+            	//unlock the block chain
+            	log_info("Abhash: Blockchain has increased to size " + to_string(bc.getBlockChain().size()));
+            } else {
+				log_info("Block creation either stopped or not a valid block");
+			}
 			bcMutex.unlock();
 			pow_state = false;
         } else {
@@ -497,7 +503,7 @@ int main(int argc, char *argv[]){
         and later publish it to the network*/
     std::thread powThread(check_run_pow);
     //second thread to set flag to stop the execution of the previous thread by setting the flag
-    std::thread monitorThread(monitor_stop_pow);
+    //std::thread monitorThread(monitor_stop_pow);
    
 	candidate_ip_set.erase("");	
 	std::set<string>::iterator it;
