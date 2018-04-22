@@ -21,6 +21,14 @@ Tx::Tx(string sender, string receiver,int amount){
 	this->leftoverAmt =-1;
 }
 
+Tx::Tx(string id, string sender, string receiver, vector<string> inputs, int amount, int leftOverAmount){
+	this->TxId = sender+receiver;
+	this->sender = sender;
+	this->receiver = receiver;
+	this->inputTx = inputs;
+	this->amount = amount;
+	this->leftoverAmt = leftOverAmount;
+}
 Tx::Tx(string sender, string receiver,vector<string> inputs, int amount,int leftoverAmount){
 	const long double sysTime = time(0);
 	this->TxId = sender + "_" + receiver + "_" + get_own_ip() + "_" + to_string(sysTime);
