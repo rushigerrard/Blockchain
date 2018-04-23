@@ -116,7 +116,7 @@ bool verify_transactions_in_blockchain(Tx tx){
 				log_info("check1: " + to_string(check1) + " total: " + to_string(total));
 				//check2 = check if the input transaction is not input of other transactions
 				for(unsigned int l = 0; l < inputs1.size(); l++) {
-					if(inputs[k].compare(inputs1[l]) == 0) {
+					if(inputs[k].compare(inputs1[l]) == 0 && tx_list[j].getSender().compare(tx.getSender()) == 0) {
 						log_info("Verification failed due to double spending");
 						check2++;
 					}
