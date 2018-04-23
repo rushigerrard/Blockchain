@@ -1,4 +1,4 @@
-	//filename: user.cpp
+//filename: user.cpp
 //libraries for network communication
 #include <pistache/net.h>
 #include <pistache/http.h>
@@ -239,6 +239,5 @@ int main(int argc, char *argv[]) {
 			std::cout<<"Enter Correct Option\n";
 		}
 	}
-	//client.shutdown();
 
 }

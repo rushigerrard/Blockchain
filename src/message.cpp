@@ -37,7 +37,6 @@ string Message::getMessageId(){
 string Message::getMessageBody(){
         return this->message_body;
 }
-
 ostream& operator<<(ostream &strm,const Message &Message){
         return strm << "id : " << Message.message_id << " body : " << Message.message_body  <<endl;
 }

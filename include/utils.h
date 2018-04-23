@@ -6,6 +6,7 @@
 #include "tx.h"
 #include "block.h"
 #include "blockchain.h"
+#include "message.h"
 #include <string>
 #include <vector>
 #include <set>
