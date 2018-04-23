@@ -83,6 +83,6 @@ bool Tx::compare_Tx(Tx t2){
 }
 
 string Tx::toString(){
-	return (this->TxId + "->" + this->sender + "->" + this->receiver +"->" + to_string(this->amount));
+	return (this->sender + "->" + this->receiver +"->" + to_string(this->amount));
 }
 

@@ -22,7 +22,7 @@ string Block::printTxList(){
 	for(unsigned int i=0;i < this->tx_list.size(); i++){
 		ss << tx_list[i].toString()<<"\n";
 		//log_info(tx_list[i].toString());
-		cout<<tx_list[i].toString()<<"\n";
+		//cout<<tx_list[i].toString()<<"\n";
 	}
 	return ss.str();
 }

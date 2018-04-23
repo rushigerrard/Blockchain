@@ -23,6 +23,7 @@
 #include <string>
 #include <unistd.h>
 #include <cstdlib>
+#include<time.h>
 
 #define PORT "9080"
 #define END_POINT_TX "/tx"
@@ -113,12 +114,14 @@ std::vector<std::string> getInputIds(std::vector<Tx> inputs){
 //function generates a random but valid transaction for a random user
 string autoTxGenerator(){
 	//randomly choose a user
+	srand(time(NULL));
 	int i = rand()%4;
 	string user = base.at(i);
-        vector<Tx> inputs = getValidTx(user);
+    vector<Tx> inputs = getValidTx(user);
 	vector<string> input_ids = getInputIds(inputs);
 	//post a transaction of random value within the users total amount
 	int total = getTotal(user, inputs);
+	srand(time(NULL));
 	int amount = rand()%total;
 	int change = total - amount;
 	log_info("Total: " + to_string(total) + " Amount: " + to_string(amount) + " Change: " + to_string(change));
