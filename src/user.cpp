@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
 				if(!body.empty()){
 					bc1 = toBlockChain(body); 
 					//std::cout << "Received blockchain from Miner: " << std::endl;
-					std::cout << "Number of Node in BlockChain: " << bc1.getBlockChain().size()<<std::endl;
+					std::cout << "Number of Block in BlockChain: " << bc1.getBlockChain().size()<<std::endl;
 					//bc1.printBC(bc1.getBlockChain());  
 				}else{
 					throw NoBlockchainException();
@@ -231,7 +231,7 @@ int main(int argc, char *argv[]) {
 				cout <<"Transaction posted to " << host_info+END_POINT_TX << endl;
 				//sleep(5);
 			std::string dummy;
-			std::cout<<"Enter after block is added in miners blockchain\n";
+			std::cout<<"Enter any key to Get the updated BlockChain, after Block is Mined\n";
 			std::cin >> dummy;	
 		} else if(option == 3){ 
 			bc1.printBC(bc1.getBlockChain());
