@@ -51,8 +51,7 @@ string Block::generateHash(){
 }
 //print the content of this block
 void Block::printBlock(){
-	log_info("Block information : ");
-	log_info("prevHash : " + this->prevHash + " Nounce : " + to_string(nounce) + " Hash  : " + myHash + " TX: " + printTxList());
+	log_info("prevHash : " + this->prevHash + "\nNounce : " + to_string(nounce) + "\nHash  : " + myHash + "\nTX: \n" + printTxList());
 	//cout << "prevHash : " << this->prevHash + " Nounce : " << to_string(nounce) << " Hash : " + this->myHash<<endl;
 	//cout<< printTxList();
 }
