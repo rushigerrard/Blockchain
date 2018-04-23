@@ -22,8 +22,8 @@
 
 
 //function to verify transactions
-void check_txlist();
-bool verify_tx(Tx);
+void verify_transactions_in_txlist();
+bool verify_transactions_in_blockchain(Tx);
 
 //function to calculate Sha256
 std::string sha256(std::string s);

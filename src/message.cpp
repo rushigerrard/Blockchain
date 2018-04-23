@@ -6,14 +6,16 @@
 #include <iostream>
 #include <sstream>
 #include <set>
+#include <mutex>
 using namespace std;
 
+extern mutex message_setMutex;
 extern set<string> message_set;
 extern int message_count;
 extern string my_ip;
 string my_ip1;
 int broadcast_client(string, string);
-bool verify_tx(Tx);
+//bool verify_tx(Tx);
 
 Message::Message(){
 
@@ -78,20 +80,21 @@ bool verify_transaction_message(string transaction_message){
 		Message m = toMessage(transaction_message);
 		string message_body = m.getMessageBody();
 		Tx tx = toTx(message_body);
-		return verify_tx(tx);
+		return verify_transactions_in_blockchain(tx);
 }
 bool message_previously_read(string message){
 	Message m = toMessage(message);
 	string message_id = m.getMessageId();
-	
+	message_setMutex.lock();	
 	if(message_set.find(message_id) == message_set.end()){
 		//seeing the message for the first time
 		log_info("New broadcast message received. Message_id : " + message_id);
 		message_set.insert(message_id);
-		
+		message_setMutex.unlock();	
 		//inform that message was not seen before
 		return true;
 	}
+	message_setMutex.unlock();
 	log_info("Broadcast was seen earlier. Dropping the current message. Message_id : " + message_id);
 	return false;	
 }

@@ -38,4 +38,5 @@ std::atomic<bool> always_run_th(true);  //th1 and th2 while loop check whehther 
 std::atomic<bool> pow_state(false);     // this is a indication that thread 1 running  pow
 std::mutex bcMutex;         //lock for block chain
 std::mutex tx_listMutex;    //lock confirmed tx
+std::mutex message_setMutex; //lock for message set
 #endif

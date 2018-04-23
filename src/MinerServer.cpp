@@ -42,7 +42,6 @@ extern vector<Tx> txlist_uv;
 extern mutex tx_listMutex;
 extern mutex bcMutex; 
 
-bool verify_tx(Tx );
 void verify_received_block(Block b1);
 string create_broadcast_message(string );
 int broadcast_transaction_message(string );
@@ -105,7 +104,7 @@ class MyHandler : public Http::Handler {
 					Tx tx = toTx(reqString);
 					response.send(Http::Code::Ok, "Transaction received from a user", MIME(Text, Plain));
 					txlist_uv.push_back(tx);		
-					if(verify_tx(tx)) {
+					if(verify_transactions_in_blockchain(tx)) {
 						log_info("Transaction successfully verified. Adding it to a new block");
 						tx_listMutex.lock();
                                                 txlist.push_back(tx);

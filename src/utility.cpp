@@ -49,16 +49,17 @@ extern vector<Tx> txlist_uv;
 extern mutex bcMutex; 
 
 //function to verify transactions within txlist
-void check_txlist() {
-        std::vector<Tx> repeat;
+//repeated transactions are removed from txlist
+void verify_transactions_in_txlist() {
+        std::set<std::string> repeat;
         for(unsigned int i = 0; i < txlist.size() ; i++){
                 std::vector<std::string> inputs1 = txlist[i].getInputs();
                 for(unsigned int j = i+1; j < txlist.size(); j++){
                         std::vector<std::string> inputs2 = txlist[j].getInputs();
                         for(unsigned int k = 0; k < inputs1.size(); k++){
                                 for(unsigned int l = 0; l < inputs2.size(); l++){
-                                        if(inputs1[k].compare(inputs2[l])){
-                                                repeat.push_back(txlist[j]);
+                                        if(inputs1[k].compare(inputs2[l]) == 0 && txlist[j].getSender().compare(txlist[i].getSender()) == 0){
+                                                repeat.insert(txlist[j].getId());
                                         }
                                 }
                         }
@@ -67,19 +68,17 @@ void check_txlist() {
         }
 	log_info("Repeat list size :  " +  to_string(repeat.size()));
         std::vector<Tx>::iterator iter;
-        for(unsigned int i = 0; i < repeat.size(); i++){
-                for (iter = txlist.begin(); iter != txlist.end(); ) {
-                        if(iter->getId().compare(repeat[i].getId()) == 0){
-                                iter = txlist.erase(iter);
-                        }else{
-                                iter++;
-                        }
-                }
-        }
+	for (iter = txlist.begin(); iter != txlist.end(); ) {
+		if(repeat.find(iter->getId()) != repeat.end()){
+			iter = txlist.erase(iter);
+		}else{
+			iter++;
+		}
+	}
 
 }
-//function to verify transaction
-bool verify_tx(Tx tx) {
+//function to verify transactions in blockchain
+bool verify_transactions_in_blockchain(Tx tx){
 	//get the input transactions
 	//check if the input transactions are valid
 	//check if the input transaction are not used as inputs anywhere else

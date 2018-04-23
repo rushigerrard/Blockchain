@@ -407,7 +407,7 @@ void check_run_pow(){
 			//cout<<"Abhash: started working on pow"<<endl;
 			gettimeofday(&start,NULL);		
 			tx_listMutex.lock();
-			check_txlist();
+			verify_transactions_in_txlist();
 			//set the proof of work as running
 			pow_state = true;
 			//copy the txlist to your local variable and then create a block and start mining it

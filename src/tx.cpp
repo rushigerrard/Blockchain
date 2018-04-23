@@ -71,7 +71,7 @@ int Tx::getLeftoverAmt(){
 }
 
 ostream& operator<<(ostream &strm,const Tx &tx){
-	return strm << tx.sender << "->" << tx.receiver << "->" << tx.amount <<endl;
+	return strm << tx.TxId << "->" << tx.sender << "->" << tx.receiver << "->" << tx.amount <<endl;
 }
 
 
@@ -83,6 +83,6 @@ bool Tx::compare_Tx(Tx t2){
 }
 
 string Tx::toString(){
-	return (this->sender + "->" + this->receiver +"->" + to_string(this->amount));
+	return (this->TxId + "->" + this->sender + "->" + this->receiver +"->" + to_string(this->amount));
 }
 
