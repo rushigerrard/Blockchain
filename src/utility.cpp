@@ -52,20 +52,19 @@ extern mutex bcMutex;
 //repeated transactions are removed from txlist
 void verify_transactions_in_txlist() {
         std::set<std::string> repeat;
-        for(unsigned int i = 0; i < txlist.size() ; i++){
-                std::vector<std::string> inputs1 = txlist[i].getInputs();
-                for(unsigned int j = i+1; j < txlist.size(); j++){
-                        std::vector<std::string> inputs2 = txlist[j].getInputs();
-                        for(unsigned int k = 0; k < inputs1.size(); k++){
-                                for(unsigned int l = 0; l < inputs2.size(); l++){
-                                        if(inputs1[k].compare(inputs2[l]) == 0 && txlist[j].getSender().compare(txlist[i].getSender()) == 0){
-                                                repeat.insert(txlist[j].getId());
-                                        }
-                                }
-                        }
-
-                }
-        }
+		for(unsigned int i = 0; i < txlist.size() ; i++){
+			std::vector<std::string> inputs1 = txlist[i].getInputs();
+			for(unsigned int j = i+1; j < txlist.size(); j++){
+				std::vector<std::string> inputs2 = txlist[j].getInputs();
+				for(unsigned int k = 0; k < inputs1.size(); k++){
+					for(unsigned int l = 0; l < inputs2.size(); l++){
+						if(inputs1[k].compare(inputs2[l]) == 0 && txlist[j].getSender().compare(txlist[i].getSender()) == 0){
+							repeat.insert(txlist[j].getId());
+						}
+					}
+				}
+			}
+		}
 	log_info("Repeat list size :  " +  to_string(repeat.size()));
         std::vector<Tx>::iterator iter;
 	for (iter = txlist.begin(); iter != txlist.end(); ) {

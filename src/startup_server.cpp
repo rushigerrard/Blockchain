@@ -69,13 +69,19 @@ void verify_received_block(Block b1){
 		//compare with verified Tx
 		tx_listMutex.lock();
 		vector<Tx> blkTxList =b1.getTxList();
+		/*log_debug("Abhash: blkTxList has size "+ to_string(blkTxList.size())+ " Tx list has "+ to_string(txlist.size()));
+		cout<<"Blk list is "<<b1.printTxList()<<endl;
+		log_info("##########TX LIST in !pow ");
+		for(unsigned int i=0;i<txlist.size();i++){
+			cout << txlist[i].toString() << endl;
+		}*/
 		for(unsigned int i=0;i<blkTxList.size();i++){
 			for(unsigned int j=0;j<txlist.size();j++){
 				if(blkTxList[i].compare_Tx(txlist[j])){
 					//equal remove from tx_list
 					txlist.erase(txlist.begin()+i);
-					blkTxList.erase(blkTxList.begin()+j);
-					i--;
+					//blkTxList.erase(blkTxList.begin()+j);
+					//i--;
 					j--;
 				}
 			}
@@ -87,8 +93,8 @@ void verify_received_block(Block b1){
 				if(blkTxList[i].compare_Tx(txlist_uv[j])){
 					//equal remove from tx_list
 					txlist_uv.erase(txlist_uv.begin()+i);
-					blkTxList.erase(blkTxList.begin()+j);
-					i--;
+					//blkTxList.erase(blkTxList.begin()+j);
+					//i--;
 					j--;
 				}
 			}
@@ -107,8 +113,8 @@ void verify_received_block(Block b1){
 				if(blkTxList[i].compare_Tx(txlist[j])){
 					//equal remove from tx_list
 					txlist.erase(txlist.begin()+i);
-					blkTxList.erase(blkTxList.begin()+j);
-					i--;
+					//blkTxList.erase(blkTxList.begin()+j);
+					//i--;
 					j--;
 				}
 			}
@@ -120,8 +126,8 @@ void verify_received_block(Block b1){
 				if(blkTxList[i].compare_Tx(txlist_uv[j])){
 					//equal remove from tx_list
 					txlist_uv.erase(txlist_uv.begin()+i);
-					blkTxList.erase(blkTxList.begin()+j);
-					i--;
+					//blkTxList.erase(blkTxList.begin()+j);
+					//i--;
 					j--;
 				}
 			}
@@ -424,6 +430,7 @@ void check_run_pow(){
 			bcMutex.unlock();
 			tx_listMutex.unlock();
 			if(i==0){
+				log_info("!!!! Transaction removed by previous function");
 				pow_state = false;
 				continue;
 			}
@@ -456,6 +463,9 @@ void check_run_pow(){
 				log_info("#####################################################################################");
 			} else {
 				log_info("Block creation either stopped or not a valid block");
+			}
+			if(stop_block_creation){
+				log_info("Abhash:POW work was stopped!!!!");
 			}
 			bcMutex.unlock();
 			pow_state = false;

@@ -76,7 +76,7 @@ ostream& operator<<(ostream &strm,const Tx &tx){
 
 
 bool Tx::compare_Tx(Tx t2){
-	if((this->getId().compare(t2.getId())!=0) || (this->getAmount() !=t2.getAmount()) || (this->getLeftoverAmt() !=t2.getLeftoverAmt())){
+	if(((this->getId()).compare(t2.getId()) != 0) && (this->getAmount() !=t2.getAmount()) && (this->getLeftoverAmt() !=t2.getLeftoverAmt())){
 		return false;
 	}
 	return true;

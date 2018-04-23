@@ -68,7 +68,7 @@ bool Block::VerifyBlock(Block block){
 	ss<<block.prevHash << block.printTxList() << block.nounce;
 	string hash = sha256(ss.str());
 	if(hash.compare(block.myHash)!=0){
-		log_info("Block [ " +  block.toString() + " ] verification failed.");
+		//log_info("Block [ " +  block.toString() + " ] verification failed.");
 		log_error("Block [ " +  block.toString() + " ] verification failed.");
 		return false;
 	}
