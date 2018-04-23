@@ -14,7 +14,7 @@ Tx::Tx(){
 }
 Tx::Tx(string sender, string receiver,int amount){
 	const long double sysTime = time(0);
-	this->TxId = sender + receiver + to_string(sysTime);
+	this->TxId = sender + "_" + receiver + "_" + get_own_ip() + "_" + to_string(sysTime);
 	this->sender = sender;
 	this->receiver = receiver;
 	this->amount= amount;
@@ -31,7 +31,7 @@ Tx::Tx(string id, string sender, string receiver, vector<string> inputs, int amo
 }
 Tx::Tx(string sender, string receiver,vector<string> inputs, int amount,int leftoverAmount){
 	const long double sysTime = time(0);
-	this->TxId = sender + receiver + to_string(sysTime);
+	this->TxId = sender + "_" + receiver + "_" + get_own_ip() + "_" + to_string(sysTime);
 	this->sender = sender;
 	this->receiver = receiver;
 	this->inputTx = inputs;
@@ -71,7 +71,7 @@ int Tx::getLeftoverAmt(){
 }
 
 ostream& operator<<(ostream &strm,const Tx &tx){
-	return strm << tx.sender << "->" << tx.receiver << "->" << tx.amount <<endl;
+	return strm << tx.TxId << "->" << tx.sender << "->" << tx.receiver << "->" << tx.amount <<endl;
 }
 
 
@@ -83,6 +83,6 @@ bool Tx::compare_Tx(Tx t2){
 }
 
 string Tx::toString(){
-	return (this->sender + "->" + this->receiver +"->" + to_string(this->amount));
+	return (this->TxId + "->" + this->sender + "->" + this->receiver +"->" + to_string(this->amount));
 }
 
