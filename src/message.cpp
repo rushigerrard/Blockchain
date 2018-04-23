@@ -59,6 +59,10 @@ string create_broadcast_message(string transactionMessage){
 	log_info("Initiaited broadcast workflow for current transaction...");
 	string message_id = generate_message_id();
 	string message_body = transactionMessage;
+	//Add message_id to own message set
+	message_setMutex.lock();
+	message_set.insert(message_id);
+	message_setMutex.unlock();
 	Message m(message_id, message_body);
 	return toString(m);
 }
