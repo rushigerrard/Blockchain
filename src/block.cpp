@@ -27,7 +27,7 @@ string Block::printTxList(){
 	return ss.str();
 }
 string Block::generateHash(){
-	cout<<"[ INFO ] "<< getCurrentTime() <<" : Started genesis block creation..."<<endl;
+	//cout<<"[ INFO ] "<< getCurrentTime() <<" : Started genesis block creation..."<<endl;
 	long nounce = 0;
     char temp[MATCHING_ZEROS + 1];
     int i=0;

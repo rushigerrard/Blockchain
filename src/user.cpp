@@ -206,7 +206,7 @@ int main(int argc, char *argv[]) {
 			return 0;
 		},Async::IgnoreException);
 		
-		int option;
+		int option=0;
 		std::cout<<"\n\nEnter 1 for balance \nEnter 2 for posting random transaction\n3.Enter 3 for Whole BlockChain\n\n";
 		std::cin >> option;
 		if(option == 1){

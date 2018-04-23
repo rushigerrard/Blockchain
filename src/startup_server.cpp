@@ -400,7 +400,7 @@ void check_run_pow(){
 		log_info("Number of transactions of TX are " + to_string(txlist.size()));
 		if(txlist.size()!=0 && !(pow_state)){
 			stop_block_creation = false;//this is to indeicate that tx present allow generate hash
-			log_info("Print BlockChain");
+			log_info("Printing BlockChain before working on POW");
 			bc.printBC(bc.getBlockChain());
 			log_info("Intial Printing Done");
 			log_info("Started working on proof of work...");
@@ -440,6 +440,7 @@ void check_run_pow(){
 			//cout<<"Abhash: stop_block_creation " <<stop_block_creation << " Last Hash " << bc.lastHash() << " prev Hash: "<< b1.getPrevHash()<<endl;
 			if(!stop_block_creation && (bc.lastHash().compare(b1.getPrevHash())==0)){
 				bc.addBlock_Last(b1);
+				log_info("####################################################################################");
 				log_info("Block added to blockchain");
 				//call a method to broadcast the block to other node as well
 				string sendBlk = toString(b1);
@@ -452,6 +453,7 @@ void check_run_pow(){
 				bc.printBC(bc.getBlockChain());
 				//unlock the block chain
 				log_info("Blockchain has increased to size " + to_string(bc.getBlockChain().size()));
+				log_info("#####################################################################################");
 			} else {
 				log_info("Block creation either stopped or not a valid block");
 			}

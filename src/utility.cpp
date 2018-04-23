@@ -109,11 +109,11 @@ bool verify_transactions_in_blockchain(Tx tx){
 						log_info("receiver match. total: " + to_string(total) + " amount: " + to_string(tx_list[j].getAmount()));
 						total = total +  tx_list[j].getAmount();
 					} else {
-						log_info("Verification failed");
+						log_debug("Verification failed");
 					}
 					check1++;
 				}
-				log_info("check1: " + to_string(check1) + " total: " + to_string(total));
+				//log_info("check1: " + to_string(check1) + " total: " + to_string(total));
 				//check2 = check if the input transaction is not input of other transactions
 				for(unsigned int l = 0; l < inputs1.size(); l++) {
 					if(inputs[k].compare(inputs1[l]) == 0 && tx_list[j].getSender().compare(tx.getSender()) == 0) {
@@ -121,7 +121,7 @@ bool verify_transactions_in_blockchain(Tx tx){
 						check2++;
 					}
 				}
-				log_info("check2: " + to_string(check2) + " total: " + to_string(total));
+				//log_info("check2: " + to_string(check2) + " total: " + to_string(total));
 			}
 		}
 	}
