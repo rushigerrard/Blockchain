@@ -83,7 +83,7 @@ bool verify_transaction_message(string transaction_message){
 		Message m = toMessage(transaction_message);
 		string message_body = m.getMessageBody();
 		Tx tx = toTx(message_body);
-		return verify_transactions_in_blockchain(tx);
+		return verify_transactions_in_blockchain(tx) && verify_transaction_with_currentblock(tx) ;
 }
 bool message_previously_read(string message){
 	Message m = toMessage(message);

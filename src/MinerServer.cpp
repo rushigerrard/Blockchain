@@ -104,11 +104,12 @@ class MyHandler : public Http::Handler {
 					Tx tx = toTx(reqString);
 					response.send(Http::Code::Ok, "Transaction received from a user", MIME(Text, Plain));
 					txlist_uv.push_back(tx);		
-					if(verify_transactions_in_blockchain(tx)) {
+					if(verify_transactions_in_blockchain(tx) && verify_transaction_with_currentblock(tx)) {
 						log_info("Transaction successfully verified. Adding it to a new block");
 						tx_listMutex.lock();
                                                 txlist.push_back(tx);
-                                                tx_listMutex.unlock();
+                                                log_debug("Transaction added to txlist was " + tx.toString());
+						tx_listMutex.unlock();
 						//add transaction to block
 						string broadcast_message = create_broadcast_message(reqString);
 						broadcast_transaction_message(broadcast_message);
@@ -130,9 +131,9 @@ class MyHandler : public Http::Handler {
 							Message m = toMessage(message);
 							string message_body = m.getMessageBody();
                 					Tx tx = toTx(message_body);
-							log_info("Added transaction to transaction list");
 							tx_listMutex.lock();
 							txlist.push_back(tx);
+							log_debug("Transaction added to txlist was" + tx.toString());
 							tx_listMutex.unlock();
 							broadcast_transaction_message(message);
 						}	

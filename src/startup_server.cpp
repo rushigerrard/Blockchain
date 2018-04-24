@@ -39,12 +39,14 @@ extern set<string>  broadcast_ip_set;
 extern BlockChain bc;
 extern vector<Tx> txlist;
 extern vector<Tx> txlist_uv; //pool of unverified Tx
+extern vector<Tx> txlist_current; //contains copy of transaction list of block being mined
 /*Make this variable also thread safe*/
 extern std::atomic<bool> stop_block_creation;//set by th2 to stop pow
 extern std::atomic<bool> always_run_th; //this is
 extern std::atomic<bool> pow_state; //thread 1 is running
 extern std::mutex bcMutex;
 extern std::mutex tx_listMutex;
+extern std::mutex txlist_currentMutex;
 
 int broadcast_solved_block_message(string s1);
 void stabilization_workflow();
@@ -70,11 +72,11 @@ void verify_received_block(Block b1){
 		tx_listMutex.lock();
 		vector<Tx> blkTxList =b1.getTxList();
 		/*log_debug("Abhash: blkTxList has size "+ to_string(blkTxList.size())+ " Tx list has "+ to_string(txlist.size()));
-		cout<<"Blk list is "<<b1.printTxList()<<endl;
-		log_info("##########TX LIST in !pow ");
-		for(unsigned int i=0;i<txlist.size();i++){
-			cout << txlist[i].toString() << endl;
-		}*/
+		  cout<<"Blk list is "<<b1.printTxList()<<endl;
+		  log_info("##########TX LIST in !pow ");
+		  for(unsigned int i=0;i<txlist.size();i++){
+		  cout << txlist[i].toString() << endl;
+		  }*/
 		for(unsigned int i=0;i<blkTxList.size();i++){
 			for(unsigned int j=0;j<txlist.size();j++){
 				if(blkTxList[i].compare_Tx(txlist[j])){
@@ -405,15 +407,15 @@ void check_run_pow(){
 		//cout<< " Number of Tx are " << txlist.size() <<endl;
 		log_info("Number of transactions of TX are " + to_string(txlist.size()));
 		if(txlist.size()!=0 && !(pow_state)){
-			stop_block_creation = false;//this is to indeicate that tx present allow generate hash
+			stop_block_creation = false;//this is to indicate that tx present allow generate hash
 			log_info("Printing BlockChain before working on POW");
 			bc.printBC(bc.getBlockChain());
 			log_info("Intial Printing Done");
 			log_info("Started working on proof of work...");
 			//cout<<"Abhash: started working on pow"<<endl;
 			gettimeofday(&start,NULL);		
-			tx_listMutex.lock();
 			verify_transactions_in_txlist();
+			tx_listMutex.lock();
 			//set the proof of work as running
 			pow_state = true;
 			//copy the txlist to your local variable and then create a block and start mining it
@@ -424,8 +426,14 @@ void check_run_pow(){
 			for(i=0;i<txlist.size();i++){
 				b1.addTx(txlist[i]);
 			}
+			//make copy of current txlist - to verify newly posted transactions against currently mined block
+			txlist_currentMutex.lock();
+			txlist_current =  txlist;
+			//log_debug("Made copy of current tx list ");
+			txlist_currentMutex.unlock();
 			//clear the txlist
 			txlist.clear();
+			//log_debug("txlist_current size after clearing txlist " + to_string(txlist_current.size()));
 			//release the lock of block chain and txlist and continue with block generation
 			bcMutex.unlock();
 			tx_listMutex.unlock();
@@ -447,6 +455,9 @@ void check_run_pow(){
 			//cout<<"Abhash: stop_block_creation " <<stop_block_creation << " Last Hash " << bc.lastHash() << " prev Hash: "<< b1.getPrevHash()<<endl;
 			if(!stop_block_creation && (bc.lastHash().compare(b1.getPrevHash())==0)){
 				bc.addBlock_Last(b1);
+				txlist_currentMutex.lock();
+				txlist_current.clear();
+				txlist_currentMutex.unlock();
 				log_info("####################################################################################");
 				log_info("Block added to blockchain");
 				//call a method to broadcast the block to other node as well
@@ -455,7 +466,7 @@ void check_run_pow(){
 				gettimeofday(&end,NULL);
 				timersub(&end,&start,&fin);
 				log_info("Time taken for proof of work : " + to_string(fin.tv_sec) + "." + to_string(fin.tv_usec));
-        			//cout<<"B3: Time taken for is "<<fin.tv_sec<<"."<<fin.tv_usec<<endl;
+				//cout<<"B3: Time taken for is "<<fin.tv_sec<<"."<<fin.tv_usec<<endl;
 				log_info("Printing BlockChain after adding");
 				bc.printBC(bc.getBlockChain());
 				//unlock the block chain
@@ -465,7 +476,7 @@ void check_run_pow(){
 				log_info("Block creation either stopped or not a valid block");
 			}
 			if(stop_block_creation){
-				log_info("Abhash:POW work was stopped!!!!");
+				log_info("POW was stopped!!!!");
 			}
 			bcMutex.unlock();
 			pow_state = false;
