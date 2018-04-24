@@ -405,12 +405,12 @@ void check_run_pow(){
 	while (always_run_th){
 		//locking on tx and  have to check, can we make bc and tx_list atomic and it may solve the problem
 		//cout<< " Number of Tx are " << txlist.size() <<endl;
-		log_info("Number of transactions of TX are " + to_string(txlist.size()));
 		if(txlist.size()!=0 && !(pow_state)){
+			log_info("Number of transactions in confirmed transaction pool is " + to_string(txlist.size()));
 			stop_block_creation = false;//this is to indicate that tx present allow generate hash
-			log_info("Printing BlockChain before working on POW");
+			log_info("BlockChain before working on POW : ");
 			bc.printBC(bc.getBlockChain());
-			log_info("Intial Printing Done");
+			//log_info("Intial Printing Done");
 			log_info("Started working on proof of work...");
 			//cout<<"Abhash: started working on pow"<<endl;
 			gettimeofday(&start,NULL);		
@@ -467,7 +467,7 @@ void check_run_pow(){
 				timersub(&end,&start,&fin);
 				log_info("Time taken for proof of work : " + to_string(fin.tv_sec) + "." + to_string(fin.tv_usec));
 				//cout<<"B3: Time taken for is "<<fin.tv_sec<<"."<<fin.tv_usec<<endl;
-				log_info("Printing BlockChain after adding");
+				log_info("BlockChain after proof of work completion : ");
 				bc.printBC(bc.getBlockChain());
 				//unlock the block chain
 				log_info("Blockchain has increased to size " + to_string(bc.getBlockChain().size()));
@@ -482,7 +482,7 @@ void check_run_pow(){
 			pow_state = false;
 		} else {
 			//you have to sleep for 30 seconds to get enough block in the shared txlist variable
-			log_debug("Miner is sleeping,before running again");
+			log_debug("No new transactions were posted. Miner is sleeping before running again");
 			this_thread::sleep_for(chrono::seconds(MINER_SLEEP));
 		}
 	}

@@ -393,7 +393,7 @@ string createHash(string s1){
 		hash = sha256(ss.str());
 		nounce++;
 	}while(hash.substr(0,MATCHING_ZEROS) != str);
-	cout<< "Hash is "<<hash<<endl;
+	cout<<"[ INFO ] "<< getCurrentTime() <<" : Hash is "<<hash<<endl;
 	return hash;
 }
 
