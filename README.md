@@ -96,6 +96,8 @@ Step 8: please follow the Instruction as it appear on user_main process to post 
 Step 9: To stop any process started in step 6 or 7 please press ctrl+c or ctrl+z and on server node please run the script as follow.
 
 	$ ./server_reset.sh
+	
+Note: If step 9 doesn't allow the server run again and still there is a crash, this might be because the serverstartup process is not killed properly, please kill the process manually by calling "kill -9 <process ID of serverstartup>". Process id "serverstartup" can be greped using "ps -ef | grep serverstartup" CLI.
 
 Step 10: If you face any issue, then there might be some problem with IP configuration in candidate list, so please check them. and add it properly.
 
