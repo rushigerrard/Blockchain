@@ -1,6 +1,12 @@
+user_main
 miner
 serverstartup
-resources/*
+resources/broadcast_list
+resources/candidate_list
+logs/*
 pistache/
 log4cplus/
 src/*.o*
+src/user
+backup/*.o*
+user/user

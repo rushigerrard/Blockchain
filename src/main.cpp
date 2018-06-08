@@ -3,11 +3,13 @@
 #include "tx.h"
 #include "block.h"
 #include "blockchain.h"
-#include<iostream>
-#include<sys/time.h>
+#include <iostream>
+#include <sys/time.h>
 #include "logger.h"
 #include "utils.h"
+#include "global.h"
 using namespace std;
+char buffer[256];
 
 int main(){
 	struct timeval start,end,fin;
@@ -19,6 +21,11 @@ int main(){
     create_logger(fl, std::cout);
 
 	log_debug("BlockChain created\n");
+	int a =10,b=20;
+	string s1 = "India";
+	memset(buffer,0,256*sizeof(char));
+	sprintf(buffer,"%s is %d year older than %d is from %s","Abhash",a,b,s1.c_str());
+	log_debug(string(buffer));
 	Tx tx1("A","B",30);
 	Tx tx2("B","C",10);
 	Tx tx3("B","D",20);

@@ -4,6 +4,9 @@
 #include<sstream>
 using namespace std;
 
+Message::Message(){
+
+}
 Message::Message(string message_id, string message_body){
         this->message_id = message_id;
         this->message_body = message_body;
@@ -19,9 +22,11 @@ string Message::getMessageBody(){
 ostream& operator<<(ostream &strm,const Message &Message){
         return strm << "id : " << Message.message_id << " body : " << Message.message_body  <<endl;
 }
-
-string Message::to_string(ostream& strm){
-        ostringstream ss;
-        ss<<strm.rdbuf();
-        return ss.str();
+/*
+string Message::to_string(){
+	return (" id : " + this->message_id + " body : " + this->message_body + "\n");
+}
+*/
+string trial_method(){
+	return "trial";
 }

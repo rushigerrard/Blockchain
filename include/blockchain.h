@@ -12,6 +12,8 @@ public:
 	//Constructor which creates first Block of BlockChain(genessis Block)
 	//First Block won't have any transaction But have some predefined Hash
 	BlockChain();
+	BlockChain(const BlockChain &bc);
+	BlockChain(const int);
 	bool verifySoFARBC(vector<Block> bchain);
 	void printBC(vector<Block> bchain);
 	string lastHash();

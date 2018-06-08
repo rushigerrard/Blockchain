@@ -15,13 +15,18 @@ class Tx{
 public:
 	Tx(string sender,string receiver,int amount);
 	Tx();
-	Tx(string sender, string receiver, vector<string> inputTx, int amount);
+	Tx(const Tx &t1);
+	
+	Tx(string id, string sender, string receiver, vector<string> inputs, int amount, int leftOverAmount);
+	Tx(string sender, string receiver, vector<string> inputTx, int amount,int leftoverAmount);
 	string getId();
 	string getSender();
 	string getReceiver();
 	int getAmount();
 	string toString();
 	vector<string> getInputs();
+	int getLeftoverAmt();
+	bool compare_Tx(Tx t2);
 	friend ostream& operator<<(ostream &strm, const Tx &tx);
 	friend class boost::serialization::access;
 	template<class Archive>

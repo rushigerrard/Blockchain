@@ -14,11 +14,13 @@ class Message{
 public:
 	Message();
 	Message(string message_id,string message_body);
+	Message(const Message &m);
+
 	string getMessageId();
 	string getMessageBody();
 	
 	//string to_string();
-	//friend ostream& operator<<(ostream &strm, const Message &message);
+	friend ostream& operator<<(ostream &strm, const Message &message);
 
 	friend class boost::serialization::access;
         template<class Archive>
